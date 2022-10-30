@@ -1,0 +1,132 @@
+package main
+
+import (
+	"io/ioutil"
+	"log"
+	"os"
+	"strings"
+	"time"
+
+	"gopkg.in/yaml.v3"
+)
+
+type Configuration struct {
+	File          string
+	Debug         bool
+	Day           Day           `yaml:"day"`
+	Temperature   Temperature   `yaml:"temperature"`
+	Humidity      Humidity      `yaml:"humidity"`
+	Alerts        Alert         `yaml:"alerts"`
+	HomeAssistant HomeAssistant `yaml:"homeAssistant"`
+	Switches      []Switch      `yaml:"switches"`
+	Gpio          []Gpio        `yaml:"gpio"`
+	Sound         Sound         `yaml:"sound"`
+}
+
+type Day struct {
+	Start   string        `yaml:"start"`
+	End     string        `yaml:"end"`
+	Sunrise time.Duration `yaml:"sunrise"`
+	Sunset  time.Duration `yaml:"sunset"`
+}
+
+type Temperature struct {
+	Url   string `yaml:"url"`
+	Day   MinMax `yaml:"day"`
+	Night MinMax `yaml:"night"`
+}
+type Humidity struct {
+	Url   string `yaml:"url"`
+	Day   MinMax `yaml:"day"`
+	Night MinMax `yaml:"night"`
+}
+
+type MinMax struct {
+	Minumum int `yaml:"minumum"`
+	Maximum int `yaml:"maximum"`
+}
+
+type Alert struct {
+	Pushover    AlertPushover    `yaml:"pushover"`
+	AntiSpam    AlertAntiSpam    `yaml:"antiSpam"`
+	Humidity    AlertHumidity    `yaml:"humidity"`
+	Temperature AlertTemperature `yaml:"temperature"`
+}
+
+type AlertPushover struct {
+	UserToken string `yaml:"userToken"`
+	APIToken  string `yaml:"apiToken"`
+	Device    string `yaml:"device"`
+}
+
+type AlertAntiSpam struct {
+	Sleep time.Duration `yaml:"sleep"`
+}
+
+type AlertHumidity struct {
+	Threshold int           `yaml:"threshold"`
+	Sleep     time.Duration `yaml:"sleep"`
+}
+
+type AlertTemperature struct {
+	Threshold int           `yaml:"threshold"`
+	Sleep     time.Duration `yaml:"sleep"`
+}
+
+type HomeAssistant struct {
+	URL   string `yaml:"url"`
+	Token string `yaml:"token"`
+}
+
+type Switch struct {
+	ID      string        `yaml:"id"`
+	Name    string        `yaml:"name"`
+	Type    string        `yaml:"type"`
+	Sunrise string        `yaml:"sunrise,omitempty"`
+	Sunset  string        `yaml:"sunset,omitempty"`
+	Length  time.Duration `yaml:"length,omitempty"`
+	Sleep   time.Duration `yaml:"sleep,omitempty"`
+}
+
+type Gpio struct {
+	ID            string        `yaml:"id"`
+	Name          string        `yaml:"name"`
+	Speed         string        `yaml:"speed,omitempty"`
+	Length        time.Duration `yaml:"length,omitempty"`
+	Sleep         time.Duration `yaml:"sleep"`
+	SleepPostMist time.Duration `yaml:"sleepPostMist,omitempty"`
+	Type          string        `yaml:"type"`
+}
+
+type Sound struct {
+	Day   string `yaml:"day"`
+	Night string `yaml:"night"`
+}
+
+func LoadConfiguration() Configuration {
+	var config Configuration
+	if strings.ToLower(os.Getenv("DEBUG")) == "true" {
+		config.Debug = true
+	} else {
+		config.Debug = false
+	}
+
+	config.File = os.Getenv("CONFIG_FILE")
+	if config.File == "" {
+		config.File = "../../config/configuration.yaml"
+	}
+
+	// read config
+	yamlFile, err := ioutil.ReadFile(config.File)
+	if err != nil {
+		log.Fatalf("LoadConfiguration(): %v ", err)
+	}
+	err = yaml.Unmarshal(yamlFile, &config)
+	if err != nil {
+		log.Fatalf("LoadConfiguration(): %v", err)
+	}
+
+	log.Println("LoadConfiguration(): config file loaded")
+
+	return config
+}

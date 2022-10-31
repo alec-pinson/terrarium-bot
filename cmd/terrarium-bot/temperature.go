@@ -21,7 +21,9 @@ func MonitorTemperature() {
 			case temperature <= c.Temperature.Day.Minumum-c.Alerts.Temperature.Threshold:
 				HeatingOn()
 				SendTemperatureAlert("Really cold")
-			case temperature >= c.Temperature.Day.Minumum && temperature < c.Temperature.Day.Maximum:
+			case temperature <= c.Temperature.Day.Minumum:
+				HeatingOn()
+			case temperature > c.Temperature.Day.Minumum && temperature < c.Temperature.Day.Maximum:
 				HeatingOn()
 			}
 		} else {
@@ -34,7 +36,9 @@ func MonitorTemperature() {
 			case temperature <= c.Temperature.Night.Minumum-c.Alerts.Temperature.Threshold:
 				HeatingOn()
 				SendTemperatureAlert("Really cold")
-			case temperature >= c.Temperature.Night.Minumum && temperature < c.Temperature.Night.Maximum:
+			case temperature <= c.Temperature.Night.Minumum:
+				HeatingOn()
+			case temperature > c.Temperature.Night.Minumum && temperature < c.Temperature.Night.Maximum:
 				HeatingOn()
 			}
 		}

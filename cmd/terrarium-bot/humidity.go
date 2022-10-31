@@ -21,7 +21,10 @@ func MonitorHumidity() {
 			case humidity <= c.Humidity.Day.Minumum-c.Alerts.Humidity.Threshold:
 				FanOff()
 				SendHumidityAlert("Way below humidity levels")
-			case humidity >= c.Humidity.Day.Minumum && humidity < c.Humidity.Day.Maximum:
+			case humidity <= c.Humidity.Day.Minumum:
+				FanOff()
+				Mist()
+			case humidity > c.Humidity.Day.Minumum && humidity < c.Humidity.Day.Maximum:
 				FanOff()
 			}
 		} else {
@@ -34,7 +37,9 @@ func MonitorHumidity() {
 			case humidity <= c.Humidity.Night.Minumum-c.Alerts.Humidity.Threshold:
 				FanOff()
 				SendHumidityAlert("Way below humidity levels")
-			case humidity >= c.Humidity.Night.Minumum && humidity < c.Humidity.Night.Maximum:
+			case humidity <= c.Humidity.Night.Minumum:
+				FanOff()
+			case humidity > c.Humidity.Night.Minumum && humidity < c.Humidity.Night.Maximum:
 				FanOff()
 			}
 		}
@@ -65,6 +70,26 @@ func FanOn() {
 
 func FanOff() {
 	log.Println("Turning off fan")
+}
+
+func Mist() {
+	for _, l := range c.Switches {
+		if l.Type == "light" {
+			LightOff(l)
+		}
+	}
+	time.Sleep(5 * time.Minute)
+	for _, m := range c.Switches {
+		if m.Type == "mister" {
+			log.Printf("Misting for %v seconds", m.Length)
+		}
+	}
+	time.Sleep(20 * time.Second)
+	for _, l := range c.Switches {
+		if l.Type == "light" {
+			LightOn(l)
+		}
+	}
 }
 
 func SendHumidityAlert(alertMessage string) {

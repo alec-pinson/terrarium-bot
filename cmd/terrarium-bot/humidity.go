@@ -9,6 +9,21 @@ import (
 	"time"
 )
 
+var lastMistTime time.Time = time.Now()
+
+func MonitorMisting() {
+	for {
+		for _, m := range c.Switches {
+			if m.Type == "mister" {
+				if lastMistTime.Add(m.Sleep).Before(time.Now()) {
+					Mist()
+				}
+			}
+		}
+		time.Sleep(1 * time.Minute)
+	}
+}
+
 func MonitorHumidity() {
 	for {
 		if DayTime() {
@@ -64,15 +79,8 @@ func GetHumidity() int {
 	return int(resp.State.Sensors.Current)
 }
 
-func FanOn() {
-	log.Println("Turning on fan")
-}
-
-func FanOff() {
-	log.Println("Turning off fan")
-}
-
 func Mist() {
+	log.Printf("Misting will begin shortly")
 	for _, l := range c.Switches {
 		if l.Type == "light" {
 			LightOff(l)
@@ -82,9 +90,10 @@ func Mist() {
 	for _, m := range c.Switches {
 		if m.Type == "mister" {
 			log.Printf("Misting for %v seconds", m.Length)
+			lastMistTime = time.Now()
 		}
 	}
-	time.Sleep(20 * time.Second)
+	time.Sleep(5 * time.Second)
 	for _, l := range c.Switches {
 		if l.Type == "light" {
 			LightOn(l)

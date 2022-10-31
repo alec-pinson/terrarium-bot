@@ -19,7 +19,7 @@ type Configuration struct {
 	Alerts        Alert         `yaml:"alerts"`
 	HomeAssistant HomeAssistant `yaml:"homeAssistant"`
 	Switches      []Switch      `yaml:"switches"`
-	Gpio          []Gpio        `yaml:"gpio"`
+	GPIO          []GPIO        `yaml:"gpio"`
 	Sound         Sound         `yaml:"sound"`
 }
 
@@ -88,14 +88,16 @@ type Switch struct {
 	Sleep   time.Duration `yaml:"sleep,omitempty"`
 }
 
-type Gpio struct {
-	ID            string        `yaml:"id"`
-	Name          string        `yaml:"name"`
-	Speed         string        `yaml:"speed,omitempty"`
-	Length        time.Duration `yaml:"length,omitempty"`
-	Sleep         time.Duration `yaml:"sleep"`
-	SleepPostMist time.Duration `yaml:"sleepPostMist,omitempty"`
-	Type          string        `yaml:"type"`
+type GPIO struct {
+	Pin             int           `yaml:"pin"`
+	Name            string        `yaml:"name"`
+	Speed           int           `yaml:"speed,omitempty"`
+	Length          time.Duration `yaml:"length,omitempty"`
+	Sleep           time.Duration `yaml:"sleep"`
+	SleepPostMist   time.Duration `yaml:"sleepPostMist,omitempty"`
+	Type            string        `yaml:"type"`
+	State           string
+	LastStateChange time.Time
 }
 
 type Sound struct {

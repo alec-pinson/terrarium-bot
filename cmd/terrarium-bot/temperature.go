@@ -64,11 +64,23 @@ func GetTemperature() int {
 }
 
 func HeatingOn() {
-	log.Println("Turning on heating")
+	for _, h := range c.Switches {
+		if h.Type == "heat" {
+			if GetSwitchState(h) == "off" {
+				log.Printf("HeatingOn(): Turning on heater '%s'", h.Name)
+			}
+		}
+	}
 }
 
 func HeatingOff() {
-	log.Println("Turning off heating")
+	for _, h := range c.Switches {
+		if h.Type == "heat" {
+			if GetSwitchState(h) == "on" {
+				log.Printf("HeatingOff(): Turning off heater '%s'", h.Name)
+			}
+		}
+	}
 }
 
 func SendTemperatureAlert(alertMessage string) {

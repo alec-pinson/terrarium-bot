@@ -18,7 +18,11 @@ func main() {
 		log.Println("Night time")
 	}
 
+	FanInit()
+
 	go MonitorLights()
 	go MonitorTemperature()
-	MonitorHumidity()
+	go MonitorHumidity()
+	// go MonitorButtons()
+	MonitorMisting()
 }

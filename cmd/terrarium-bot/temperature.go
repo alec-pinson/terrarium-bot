@@ -15,12 +15,12 @@ func MonitorTemperature() {
 			switch temperature := GetTemperature(); {
 			case temperature >= c.Temperature.Day.Maximum+c.Alerts.Temperature.Threshold:
 				HeatingOff()
-				SendTemperatureAlert("Really hot")
+				SendNotification("Really hot")
 			case temperature >= c.Temperature.Day.Maximum:
 				HeatingOff()
 			case temperature <= c.Temperature.Day.Minumum-c.Alerts.Temperature.Threshold:
 				HeatingOn()
-				SendTemperatureAlert("Really cold")
+				SendNotification("Really cold")
 			case temperature <= c.Temperature.Day.Minumum:
 				HeatingOn()
 			case temperature > c.Temperature.Day.Minumum && temperature < c.Temperature.Day.Maximum:
@@ -30,12 +30,12 @@ func MonitorTemperature() {
 			switch temperature := GetTemperature(); {
 			case temperature >= c.Temperature.Night.Maximum+c.Alerts.Temperature.Threshold:
 				HeatingOff()
-				SendTemperatureAlert("Really hot")
+				SendNotification("Really hot")
 			case temperature >= c.Temperature.Night.Maximum:
 				HeatingOff()
 			case temperature <= c.Temperature.Night.Minumum-c.Alerts.Temperature.Threshold:
 				HeatingOn()
-				SendTemperatureAlert("Really cold")
+				SendNotification("Really cold")
 			case temperature <= c.Temperature.Night.Minumum:
 				HeatingOn()
 			case temperature > c.Temperature.Night.Minumum && temperature < c.Temperature.Night.Maximum:
@@ -81,8 +81,4 @@ func HeatingOff() {
 			}
 		}
 	}
-}
-
-func SendTemperatureAlert(alertMessage string) {
-	log.Println("SendTemperatureAlert(): Sent alert: '" + alertMessage + "'")
 }

@@ -30,12 +30,12 @@ func MonitorHumidity() {
 			switch humidity := GetHumidity(); {
 			case humidity >= c.Humidity.Day.Maximum+c.Alerts.Humidity.Threshold:
 				FanOn()
-				SendHumidityAlert("Really high humidity levels")
+				SendNotification("Really high humidity levels")
 			case humidity >= c.Humidity.Day.Maximum:
 				FanOn()
 			case humidity <= c.Humidity.Day.Minumum-c.Alerts.Humidity.Threshold:
 				FanOff()
-				SendHumidityAlert("Way below humidity levels")
+				SendNotification("Way below humidity levels")
 			case humidity <= c.Humidity.Day.Minumum:
 				FanOff()
 				Mist()
@@ -46,12 +46,12 @@ func MonitorHumidity() {
 			switch humidity := GetHumidity(); {
 			case humidity >= c.Humidity.Night.Maximum+c.Alerts.Humidity.Threshold:
 				FanOn()
-				SendHumidityAlert("Really high humidity levels")
+				SendNotification("Really high humidity levels")
 			case humidity >= c.Humidity.Night.Maximum:
 				FanOn()
 			case humidity <= c.Humidity.Night.Minumum-c.Alerts.Humidity.Threshold:
 				FanOff()
-				SendHumidityAlert("Way below humidity levels")
+				SendNotification("Way below humidity levels")
 			case humidity <= c.Humidity.Night.Minumum:
 				FanOff()
 			case humidity > c.Humidity.Night.Minumum && humidity < c.Humidity.Night.Maximum:
@@ -99,8 +99,4 @@ func Mist() {
 			LightOn(l)
 		}
 	}
-}
-
-func SendHumidityAlert(alertMessage string) {
-	log.Println("SendHumidityAlert(): Sent alert: '" + alertMessage + "'")
 }

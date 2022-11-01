@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 )
 
 var (
@@ -14,7 +15,6 @@ func main() {
 
 	GetSunriseTime()
 	GetSunsetTime()
-
 	log.Printf("Current Humidity: %v", int(GetHumidity()))
 	log.Printf("Current Temperature: %v", int(GetTemperature()))
 
@@ -23,6 +23,10 @@ func main() {
 	go MonitorLights()
 	go MonitorTemperature()
 	go MonitorHumidity()
-	// go MonitorButtons()
-	MonitorMisting()
+	go MonitorButtons()
+	go MonitorMisting()
+
+	for {
+		time.Sleep(1 * time.Minute)
+	}
 }

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/stianeikeland/go-rpio"
+	"github.com/stianeikeland/go-rpio/v4"
 )
 
 func FanInit() {
@@ -20,7 +20,7 @@ func FanOn() {
 	for i, f := range c.GPIO {
 		if f.Type == "fan" {
 			if f.LastStateChange.Add(f.Sleep).Before(time.Now()) && lastMistTime.Add(f.SleepPostMist).Before(time.Now()) && f.State != "on" {
-				log.Printf("FanOn(): Turning on fan '%s'", f.Name)
+				log.Printf("Fan On: %s", f.Name)
 				c.GPIO[i].LastStateChange = time.Now()
 				c.GPIO[i].State = "on"
 				SetFan(f.Pin, f.Speed)
@@ -36,7 +36,7 @@ func FanOff(NoLog ...bool) {
 		if f.Type == "fan" {
 			if f.LastStateChange.Add(f.Sleep).Before(time.Now()) && f.State != "off" {
 				if len(NoLog) == 0 {
-					log.Printf("FanOff(): Turning off fan '%s'", f.Name)
+					log.Printf("Fan Off: %s", f.Name)
 				}
 				c.GPIO[i].LastStateChange = time.Now()
 				c.GPIO[i].State = "off"
@@ -50,7 +50,6 @@ func SetFan(pinNumber int, speed int) {
 	if c.Debug {
 		return
 	}
-	uSpeed := uint32(speed)
 	err := rpio.Open()
 	if err != nil {
 		os.Exit(1)
@@ -58,7 +57,13 @@ func SetFan(pinNumber int, speed int) {
 	defer rpio.Close()
 
 	pin := rpio.Pin(pinNumber)
-	pin.Mode(rpio.Pwm)
-	pin.Freq(25)
-	pin.DutyCycle(uSpeed, 32)
+	pin.Mode(rpio.Output)
+	if speed == 0 {
+		pin.Write(rpio.Low)
+	} else {
+		// pin.Mode(rpio.Pwm)
+		// pin.Freq(25)
+		// pin.DutyCycle(uint32(speed), uint32(speed))
+		pin.Write(rpio.High)
+	}
 }

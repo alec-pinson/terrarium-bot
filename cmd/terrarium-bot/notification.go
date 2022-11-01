@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -9,13 +10,14 @@ import (
 
 var lastNotificationTime time.Time
 
-func SendNotification(alertMessage string) {
+func SendNotification(s string, v ...any) {
+	var alertMessage string = fmt.Sprintf(s, v...)
 	if lastNotificationTime.Add(c.Alerts.AntiSpam.Sleep).Before(time.Now()) {
-		log.Println("SendNotification(): Sent alert: '" + alertMessage + "'")
+		log.Println("SendNotification(): Sent alert: " + alertMessage)
 		lastNotificationTime = time.Now()
 		// PushoverNotification(alertMessage)
 	} else {
-		log.Println("SendNotification(): Alert not sent: '" + alertMessage + "' (anti-spam)")
+		log.Println("SendNotification(): Alert not sent: " + alertMessage + " (anti-spam)")
 	}
 }
 

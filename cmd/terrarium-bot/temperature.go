@@ -15,12 +15,12 @@ func MonitorTemperature() {
 			switch temperature := GetTemperature(); {
 			case temperature >= c.Temperature.Day.Maximum+c.Alerts.Temperature.Threshold:
 				HeatingOff()
-				SendNotification("Really hot")
+				SendNotification("It's very hot: %vc/%vc", temperature, c.Temperature.Day.Maximum+c.Alerts.Temperature.Threshold)
 			case temperature >= c.Temperature.Day.Maximum:
 				HeatingOff()
 			case temperature <= c.Temperature.Day.Minumum-c.Alerts.Temperature.Threshold:
 				HeatingOn()
-				SendNotification("Really cold")
+				SendNotification("It's very cold: %vc/%vc", temperature, c.Temperature.Day.Minumum-c.Alerts.Temperature.Threshold)
 			case temperature <= c.Temperature.Day.Minumum:
 				HeatingOn()
 			case temperature > c.Temperature.Day.Minumum && temperature < c.Temperature.Day.Maximum:
@@ -30,12 +30,12 @@ func MonitorTemperature() {
 			switch temperature := GetTemperature(); {
 			case temperature >= c.Temperature.Night.Maximum+c.Alerts.Temperature.Threshold:
 				HeatingOff()
-				SendNotification("Really hot")
+				SendNotification("It's very hot: %vc/%vc", temperature, c.Temperature.Night.Maximum+c.Alerts.Temperature.Threshold)
 			case temperature >= c.Temperature.Night.Maximum:
 				HeatingOff()
 			case temperature <= c.Temperature.Night.Minumum-c.Alerts.Temperature.Threshold:
 				HeatingOn()
-				SendNotification("Really cold")
+				SendNotification("It's very cold: %vc/%vc", temperature, c.Temperature.Night.Minumum-c.Alerts.Temperature.Threshold)
 			case temperature <= c.Temperature.Night.Minumum:
 				HeatingOn()
 			case temperature > c.Temperature.Night.Minumum && temperature < c.Temperature.Night.Maximum:
@@ -66,7 +66,7 @@ func HeatingOn() {
 	for _, h := range c.Switches {
 		if h.Type == "heat" {
 			if GetSwitchState(h) == "off" {
-				log.Printf("HeatingOn(): Turning on heater '%s'", h.Name)
+				log.Printf("Heater On: %s", h.Name)
 				SetSwitchState(h, "on")
 			}
 		}
@@ -77,7 +77,7 @@ func HeatingOff() {
 	for _, h := range c.Switches {
 		if h.Type == "heat" {
 			if GetSwitchState(h) == "on" {
-				log.Printf("HeatingOff(): Turning off heater '%s'", h.Name)
+				log.Printf("Heater Off: %s", h.Name)
 				SetSwitchState(h, "off")
 			}
 		}

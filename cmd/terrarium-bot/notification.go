@@ -15,13 +15,18 @@ func SendNotification(s string, v ...any) {
 	if lastNotificationTime.Add(c.Alerts.AntiSpam.Sleep).Before(time.Now()) {
 		log.Println("SendNotification(): Sent alert: " + alertMessage)
 		lastNotificationTime = time.Now()
-		// PushoverNotification(alertMessage)
+		PushoverNotification(alertMessage)
 	} else {
-		log.Println("SendNotification(): Alert not sent: " + alertMessage + " (anti-spam)")
+		if c.Debug {
+			log.Println("SendNotification(): Alert not sent: " + alertMessage + " (anti-spam)")
+		}
 	}
 }
 
 func PushoverNotification(alertMessage string) {
+	if c.Debug {
+		return
+	}
 	app := pushover.New(c.Alerts.Pushover.APIToken)
 	recipient := pushover.NewRecipient(c.Alerts.Pushover.UserToken)
 

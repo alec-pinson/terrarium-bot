@@ -11,7 +11,7 @@ import (
 func MonitorButtons() {
 	for i, b := range c.GPIO {
 		if b.Type == "button" {
-			log.Printf("MonitorButtons(): Monitoring button '%s'", b.Name)
+			log.Printf("MonitorButtons(): Monitoring button '%s'", b.Action)
 			go MonitorButton(i, b)
 		}
 	}

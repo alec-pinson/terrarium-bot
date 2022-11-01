@@ -12,11 +12,11 @@ func main() {
 	log.Println("main(): Starting...")
 	c = LoadConfiguration()
 
-	if DayTime() {
-		log.Println("Day time")
-	} else {
-		log.Println("Night time")
-	}
+	GetSunriseTime()
+	GetSunsetTime()
+
+	log.Printf("Current Humidity: %v", int(GetHumidity()))
+	log.Printf("Current Temperature: %v", int(GetTemperature()))
 
 	FanInit()
 

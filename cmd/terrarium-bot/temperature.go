@@ -59,7 +59,6 @@ func GetTemperature() int {
 	}
 	var resp TerrariumPiSensorResp
 	json.Unmarshal(responseData, &resp)
-	log.Printf("GetTemperature(): Current Temperature: %v", int(resp.State.Sensors.Current))
 	return int(resp.State.Sensors.Current)
 }
 
@@ -68,6 +67,7 @@ func HeatingOn() {
 		if h.Type == "heat" {
 			if GetSwitchState(h) == "off" {
 				log.Printf("HeatingOn(): Turning on heater '%s'", h.Name)
+				SetSwitchState(h, "on")
 			}
 		}
 	}
@@ -78,6 +78,7 @@ func HeatingOff() {
 		if h.Type == "heat" {
 			if GetSwitchState(h) == "on" {
 				log.Printf("HeatingOff(): Turning off heater '%s'", h.Name)
+				SetSwitchState(h, "off")
 			}
 		}
 	}

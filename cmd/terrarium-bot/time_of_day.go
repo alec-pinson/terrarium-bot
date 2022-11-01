@@ -5,15 +5,33 @@ import (
 	"time"
 )
 
-func Sunset() bool {
-	dNow, _ := time.Parse("15:04", time.Now().Format("15:04"))
-	dEnd, _ := time.Parse("15:04", c.Day.End)
-	dSunset := dEnd.Add(-c.Day.Sunset)
-	log.Println("Sunset(): Sunset time: " + dSunset.Format("15:04"))
+var (
+	dayStartTime time.Time
+	dayEndTime   time.Time
+	sunriseTime  time.Time
+	sunsetTime   time.Time
+)
 
-	if dNow.After(dSunset) && dNow.Before(dEnd) {
+func GetSunriseTime() time.Time {
+	dayStartTime, _ = time.Parse("15:04", c.Day.Start)
+	sunriseTime = dayStartTime.Add(-c.Day.Sunrise)
+	log.Println("Sunrise time: " + sunriseTime.Format("15:04"))
+	return sunriseTime
+}
+
+func GetSunsetTime() time.Time {
+	dayEndTime, _ = time.Parse("15:04", c.Day.End)
+	sunsetTime = dayEndTime.Add(-c.Day.Sunset)
+	log.Println("Sunset time: " + sunsetTime.Format("15:04"))
+	return sunsetTime
+}
+
+func Sunset() bool {
+	nowTime, _ := time.Parse("15:04", time.Now().Format("15:04"))
+
+	if nowTime.After(sunsetTime) && nowTime.Before(dayEndTime) {
 		return true
-	} else if dNow.Equal(dSunset) {
+	} else if nowTime.Equal(sunsetTime) {
 		return true
 	} else {
 		return false
@@ -21,14 +39,11 @@ func Sunset() bool {
 }
 
 func Sunrise() bool {
-	dNow, _ := time.Parse("15:04", time.Now().Format("15:04"))
-	dStart, _ := time.Parse("15:04", c.Day.Start)
-	dSunrise := dStart.Add(-c.Day.Sunrise)
-	log.Println("Sunrise(): Sunrise time: " + dSunrise.Format("15:04"))
+	nowTime, _ := time.Parse("15:04", time.Now().Format("15:04"))
 
-	if dNow.After(dSunrise) && dNow.Before(dStart) {
+	if nowTime.After(sunriseTime) && nowTime.Before(dayStartTime) {
 		return true
-	} else if dNow.Equal(dSunrise) {
+	} else if nowTime.Equal(sunriseTime) {
 		return true
 	} else {
 		return false
@@ -36,13 +51,11 @@ func Sunrise() bool {
 }
 
 func DayTime() bool {
-	dNow, _ := time.Parse("15:04", time.Now().Format("15:04"))
-	dStart, _ := time.Parse("15:04", c.Day.Start)
-	dEnd, _ := time.Parse("15:04", c.Day.End)
+	nowTime, _ := time.Parse("15:04", time.Now().Format("15:04"))
 
-	if dNow.After(dStart) && dNow.Before(dEnd) {
+	if nowTime.After(dayStartTime) && nowTime.Before(dayEndTime) {
 		return true
-	} else if dNow.Equal(dStart) {
+	} else if nowTime.Equal(dayStartTime) {
 		return true
 	} else {
 		return false

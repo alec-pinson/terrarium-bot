@@ -55,11 +55,13 @@ func NightTimeLights() {
 func LightOn(l Switch) {
 	if GetSwitchState(l) == "off" {
 		log.Printf("LightOn(): Turning on light '%s'", l.Name)
+		SetSwitchState(l, "on")
 	}
 }
 
 func LightOff(l Switch) {
 	if GetSwitchState(l) == "on" {
 		log.Printf("LightOff(): Turning off light '%s'", l.Name)
+		SetSwitchState(l, "off")
 	}
 }

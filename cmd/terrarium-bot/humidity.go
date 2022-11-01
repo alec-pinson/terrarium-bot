@@ -75,7 +75,6 @@ func GetHumidity() int {
 	}
 	var resp TerrariumPiSensorResp
 	json.Unmarshal(responseData, &resp)
-	log.Printf("GetHumidity(): Current Humidity: %v", int(resp.State.Sensors.Current))
 	return int(resp.State.Sensors.Current)
 }
 
@@ -87,6 +86,11 @@ func Mist() {
 		}
 	}
 
+	if lastMistTime.Add(30 * time.Minute).After(time.Now()) {
+		log.Printf("Will not mist, hit hard coded 30 minute misting limit")
+		return
+	}
+
 	log.Printf("Misting will begin shortly")
 	for _, l := range c.Switches {
 		if l.Type == "light" {
@@ -96,14 +100,27 @@ func Mist() {
 	time.Sleep(5 * time.Minute)
 	for _, m := range c.Switches {
 		if m.Type == "mister" {
-			log.Printf("Misting for %v seconds", m.Length)
-			lastMistTime = time.Now()
+			DoMist(m)
 		}
 	}
-	time.Sleep(5 * time.Second)
+
 	for _, l := range c.Switches {
 		if l.Type == "light" {
 			LightOn(l)
 		}
 	}
+}
+
+func DoMist(Mister Switch) {
+	log.Printf("Misting for %v seconds", Mister.Length)
+	lastMistTime = time.Now()
+	SetSwitchState(Mister, "on")
+	time.Sleep(Mister.Length)
+	SetSwitchState(Mister, "off")
+	time.Sleep(1 * time.Second)
+	SetSwitchState(Mister, "off")
+	time.Sleep(1 * time.Second)
+	SetSwitchState(Mister, "off")
+	time.Sleep(1 * time.Second)
+	SetSwitchState(Mister, "off")
 }

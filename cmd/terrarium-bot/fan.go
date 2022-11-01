@@ -20,7 +20,11 @@ func FanOn() {
 	for i, f := range c.GPIO {
 		if f.Type == "fan" {
 			if f.LastStateChange.Add(f.Sleep).Before(time.Now()) && lastMistTime.Add(f.SleepPostMist).Before(time.Now()) && f.State != "on" {
-				log.Printf("Fan On: %s", f.Name)
+				if DayTime() {
+					log.Printf("Fan On: %s (%v%%/%v%%)", f.Name, GetHumidity(), c.Humidity.Day.Maximum)
+				} else {
+					log.Printf("Fan On: %s (%v%%/%v%%)", f.Name, GetHumidity(), c.Humidity.Night.Maximum)
+				}
 				c.GPIO[i].LastStateChange = time.Now()
 				c.GPIO[i].State = "on"
 				SetFan(f.Pin, f.Speed)
@@ -36,7 +40,11 @@ func FanOff(NoLog ...bool) {
 		if f.Type == "fan" {
 			if f.LastStateChange.Add(f.Sleep).Before(time.Now()) && f.State != "off" {
 				if len(NoLog) == 0 {
-					log.Printf("Fan Off: %s", f.Name)
+					if DayTime() {
+						log.Printf("Fan Off: %s (%v%%/%v%%)", f.Name, GetHumidity(), c.Humidity.Day.Maximum)
+					} else {
+						log.Printf("Fan Off: %s (%v%%/%v%%)", f.Name, GetHumidity(), c.Humidity.Night.Maximum)
+					}
 				}
 				c.GPIO[i].LastStateChange = time.Now()
 				c.GPIO[i].State = "off"

@@ -11,7 +11,9 @@ import (
 func MonitorButtons() {
 	for i, b := range c.GPIO {
 		if b.Type == "button" {
-			log.Printf("MonitorButtons(): Monitoring button '%s'", b.Action)
+			if c.Debug {
+				log.Printf("MonitorButtons(): Monitoring button '%s'", b.Action)
+			}
 			go MonitorButton(i, b)
 		}
 	}
@@ -32,6 +34,7 @@ func MonitorButton(buttonIndex int, button GPIO) {
 
 	for {
 		if pin.EdgeDetected() {
+			log.Printf("Button Press: %s", c.GPIO[buttonIndex].Action)
 			c.GPIO[buttonIndex].LastStateChange = time.Now()
 		}
 		time.Sleep(time.Second / 2)

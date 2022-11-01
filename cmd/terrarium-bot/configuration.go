@@ -129,7 +129,7 @@ func LoadConfiguration() Configuration {
 		log.Fatalf("LoadConfiguration(): %v", err)
 	}
 
-	log.Println("LoadConfiguration(): config file loaded")
+	log.Println("Config file loaded")
 
 	return config
 }

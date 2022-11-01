@@ -9,7 +9,7 @@ var (
 )
 
 func main() {
-	log.Println("main(): Starting...")
+	log.Println("Starting...")
 	c = LoadConfiguration()
 
 	GetSunriseTime()

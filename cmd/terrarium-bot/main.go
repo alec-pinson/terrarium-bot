@@ -15,8 +15,13 @@ func main() {
 
 	GetSunriseTime()
 	GetSunsetTime()
-	log.Printf("Current Humidity: %v", int(GetHumidity()))
-	log.Printf("Current Temperature: %v", int(GetTemperature()))
+	if DayTime() {
+		log.Printf("Current Humidity: %v%%/%v%%", GetHumidity(), c.Humidity.Day.Maximum)
+		log.Printf("Current Temperature: %vc/%vc", GetTemperature(), c.Temperature.Day.Maximum)
+	} else {
+		log.Printf("Current Humidity: %v%%/%v%%", GetHumidity(), c.Humidity.Night.Maximum)
+		log.Printf("Current Temperature: %vc/%vc", GetTemperature(), c.Temperature.Night.Maximum)
+	}
 
 	FanInit()
 

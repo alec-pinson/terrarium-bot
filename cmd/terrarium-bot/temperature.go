@@ -66,7 +66,11 @@ func HeatingOn() {
 	for _, h := range c.Switches {
 		if h.Type == "heat" {
 			if GetSwitchState(h) == "off" {
-				log.Printf("Heater On: %s", h.Name)
+				if DayTime() {
+					log.Printf("Heater On: %s (%vc/%vc)", h.Name, GetTemperature(), c.Temperature.Day.Maximum)
+				} else {
+					log.Printf("Heater On: %s (%vc/%vc)", h.Name, GetTemperature(), c.Temperature.Night.Maximum)
+				}
 				SetSwitchState(h, "on")
 			}
 		}
@@ -77,7 +81,11 @@ func HeatingOff() {
 	for _, h := range c.Switches {
 		if h.Type == "heat" {
 			if GetSwitchState(h) == "on" {
-				log.Printf("Heater Off: %s", h.Name)
+				if DayTime() {
+					log.Printf("Heater Off: %s (%vc/%vc)", h.Name, GetTemperature(), c.Temperature.Day.Maximum)
+				} else {
+					log.Printf("Heater Off: %s (%vc/%vc)", h.Name, GetTemperature(), c.Temperature.Night.Maximum)
+				}
 				SetSwitchState(h, "off")
 			}
 		}

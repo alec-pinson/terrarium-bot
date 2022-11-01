@@ -23,7 +23,7 @@ func MonitorLights() {
 func SunriseLights() {
 	for _, l := range c.Switches {
 		if l.Type == "light" && l.Sunrise == "on" {
-			log.Printf("SunriseLights(): Turning on light '%s'", l.Name)
+			LightOn(l)
 		}
 	}
 }
@@ -31,7 +31,7 @@ func SunriseLights() {
 func SunsetLights() {
 	for _, l := range c.Switches {
 		if l.Type == "light" && l.Sunset == "off" {
-			log.Printf("SunsetLights(): Turning off light '%s'", l.Name)
+			LightOff(l)
 		}
 	}
 }
@@ -54,14 +54,14 @@ func NightTimeLights() {
 
 func LightOn(l Switch) {
 	if GetSwitchState(l) == "off" {
-		log.Printf("LightOn(): Turning on light '%s'", l.Name)
+		log.Printf("Light On: %s", l.Name)
 		SetSwitchState(l, "on")
 	}
 }
 
 func LightOff(l Switch) {
 	if GetSwitchState(l) == "on" {
-		log.Printf("LightOff(): Turning off light '%s'", l.Name)
+		log.Printf("Light Off: %s", l.Name)
 		SetSwitchState(l, "off")
 	}
 }

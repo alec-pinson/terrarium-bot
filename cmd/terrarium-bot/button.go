@@ -9,16 +9,16 @@ import (
 )
 
 func MonitorButtons() {
-	for _, b := range c.GPIO {
+	for i, b := range c.GPIO {
 		if b.Type == "button" {
 			log.Printf("MonitorButtons(): Monitoring button '%s'", b.Name)
-			go MonitorButton(b.Pin)
+			go MonitorButton(i, b)
 		}
 	}
 }
 
-func MonitorButton(pinNumber int) {
-	pin := rpio.Pin(pinNumber)
+func MonitorButton(buttonIndex int, button GPIO) {
+	pin := rpio.Pin(button.Pin)
 
 	// Open and map memory to access gpio, check for errors
 	if err := rpio.Open(); err != nil {
@@ -37,6 +37,7 @@ func MonitorButton(pinNumber int) {
 	for i := 0; i < 2; {
 		if pin.EdgeDetected() { // check if event occured
 			log.Println("button pressed")
+			c.GPIO[buttonIndex].LastStateChange = time.Now()
 			i++
 		}
 		time.Sleep(time.Second / 2)

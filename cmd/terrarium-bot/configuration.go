@@ -90,11 +90,12 @@ type Switch struct {
 
 type GPIO struct {
 	Pin             int           `yaml:"pin"`
-	Name            string        `yaml:"name"`
+	Name            string        `yaml:"name,omitempty"`
 	Speed           int           `yaml:"speed,omitempty"`
 	Length          time.Duration `yaml:"length,omitempty"`
 	Sleep           time.Duration `yaml:"sleep"`
 	SleepPostMist   time.Duration `yaml:"sleepPostMist,omitempty"`
+	Action          string        `yaml:"action,omitempty"`
 	Type            string        `yaml:"type"`
 	State           string
 	LastStateChange time.Time

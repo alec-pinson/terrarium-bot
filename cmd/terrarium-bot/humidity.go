@@ -15,7 +15,7 @@ func MonitorMisting() {
 	for {
 		for _, m := range c.Switches {
 			if m.Type == "mister" {
-				if lastMistTime.Add(m.Sleep).Before(time.Now()) {
+				if lastMistTime.Add(m.Sleep).Before(time.Now()) && DayTime() {
 					Mist()
 				}
 			}
@@ -80,6 +80,13 @@ func GetHumidity() int {
 }
 
 func Mist() {
+	for _, b := range c.GPIO {
+		if b.Type == "button" && b.Action == "prevent mist" && b.LastStateChange.Add(b.Sleep).After(time.Now()) {
+			log.Printf("Misting has been prevented via button press")
+			return
+		}
+	}
+
 	log.Printf("Misting will begin shortly")
 	for _, l := range c.Switches {
 		if l.Type == "light" {

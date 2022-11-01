@@ -14,12 +14,12 @@ func FanInit() {
 }
 
 func FanOn() {
-	for _, f := range c.GPIO {
+	for i, f := range c.GPIO {
 		if f.Type == "fan" {
 			if f.LastStateChange.Add(f.Sleep).Before(time.Now()) && lastMistTime.Add(f.SleepPostMist).Before(time.Now()) && f.State != "on" {
 				log.Printf("FanOn(): Turning on fan '%s'", f.Name)
-				f.LastStateChange = time.Now()
-				f.State = "on"
+				c.GPIO[i].LastStateChange = time.Now()
+				c.GPIO[i].State = "on"
 				SetFan(f.Pin, f.Speed)
 				time.Sleep(f.Length)
 				FanOff()

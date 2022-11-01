@@ -16,6 +16,7 @@ func MonitorMisting() {
 		for _, m := range c.Switches {
 			if m.Type == "mister" {
 				if lastMistTime.Add(m.Sleep).Before(time.Now()) && DayTime() {
+					log.Printf("Not misted for %s, current humidity (%v%%/%v%%). Misting now.", m.Sleep, GetHumidity(), c.Humidity.Day.Maximum)
 					Mist()
 				}
 			}

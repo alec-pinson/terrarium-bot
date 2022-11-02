@@ -26,7 +26,6 @@ func MonitorButton(buttonIndex int, button GPIO) {
 		log.Println(err)
 		os.Exit(1)
 	}
-	defer rpio.Close()
 
 	pin.Input()
 	pin.PullUp()

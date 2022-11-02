@@ -60,9 +60,9 @@ func SetFan(pinNumber int, speed int) {
 	}
 	err := rpio.Open()
 	if err != nil {
+		log.Println(err)
 		os.Exit(1)
 	}
-	defer rpio.Close()
 
 	pin := rpio.Pin(pinNumber)
 	pin.Mode(rpio.Output)

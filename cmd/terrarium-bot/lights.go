@@ -7,14 +7,16 @@ import (
 
 func MonitorLights() {
 	for {
-		if Sunrise() {
-			SunriseLights()
-		} else if Sunset() {
-			SunsetLights()
-		} else if DayTime() {
-			DayTimeLights()
-		} else {
-			NightTimeLights()
+		if !mistMode {
+			if Sunrise() {
+				SunriseLights()
+			} else if Sunset() {
+				SunsetLights()
+			} else if DayTime() {
+				DayTimeLights()
+			} else {
+				NightTimeLights()
+			}
 		}
 		time.Sleep(1 * time.Minute)
 	}

@@ -23,8 +23,7 @@ func main() {
 		log.Printf("Current Temperature: %vc/%vc", GetTemperature(), c.Temperature.Night.Maximum)
 	}
 
-	FanInit()
-
+	go MonitorCamera()
 	go MonitorLights()
 	go MonitorTemperature()
 	go MonitorHumidity()

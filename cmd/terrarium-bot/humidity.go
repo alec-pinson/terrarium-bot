@@ -9,7 +9,10 @@ import (
 	"time"
 )
 
-var lastMistTime time.Time = time.Now()
+var (
+	lastMistTime time.Time = time.Now()
+	mistMode     bool      = false
+)
 
 func MonitorMisting() {
 	for {
@@ -26,6 +29,7 @@ func MonitorMisting() {
 }
 
 func MonitorHumidity() {
+	FanInit()
 	for {
 		if DayTime() {
 			switch humidity := GetHumidity(); {
@@ -92,7 +96,8 @@ func Mist() {
 		return
 	}
 
-	log.Printf("Misting will begin shortly")
+	log.Printf("Misting will begin shortly, current humidity (%v%%/%v%%)", GetHumidity(), c.Humidity.Day.Maximum)
+	mistMode = true
 	for _, l := range c.Switches {
 		if l.Type == "light" {
 			LightOff(l)
@@ -110,6 +115,7 @@ func Mist() {
 			LightOn(l)
 		}
 	}
+	mistMode = false
 }
 
 func DoMist(Mister Switch) {

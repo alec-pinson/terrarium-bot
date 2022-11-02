@@ -21,6 +21,7 @@ type Configuration struct {
 	Switches      []Switch      `yaml:"switches"`
 	GPIO          []GPIO        `yaml:"gpio"`
 	Sound         Sound         `yaml:"sound"`
+	Camera        Camera        `yaml:"camera"`
 }
 
 type Day struct {
@@ -104,6 +105,12 @@ type GPIO struct {
 type Sound struct {
 	Day   string `yaml:"day"`
 	Night string `yaml:"night"`
+}
+
+type Camera struct {
+	Hostname string `yaml:"hostname"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 }
 
 func LoadConfiguration() Configuration {

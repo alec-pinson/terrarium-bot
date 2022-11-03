@@ -36,7 +36,7 @@ func MonitorButton(buttonIndex int, button GPIO) {
 			log.Printf("Button Press: %s", c.GPIO[buttonIndex].Action)
 			c.GPIO[buttonIndex].LastStateChange = time.Now()
 		}
-		time.Sleep(time.Second / 2)
+		time.Sleep(750 * time.Millisecond)
 	}
 
 }

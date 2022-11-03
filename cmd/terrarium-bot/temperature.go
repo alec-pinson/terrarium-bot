@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -53,7 +52,11 @@ func GetTemperature() int {
 	response, err := http.Get(c.Temperature.Url)
 	if err != nil {
 		log.Print(err.Error())
-		os.Exit(1)
+		if DayTime() {
+			return c.Temperature.Day.Maximum - 1
+		} else {
+			return c.Temperature.Night.Maximum - 1
+		}
 	}
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {

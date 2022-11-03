@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -15,7 +14,7 @@ func GetSwitchState(Switch Switch) string {
 	req, err := http.NewRequest("GET", c.HomeAssistant.URL+"/api/states/"+Switch.ID, nil)
 	if err != nil {
 		log.Print(err.Error())
-		os.Exit(1)
+		return "unknown"
 	}
 
 	req.Header = http.Header{
@@ -26,12 +25,13 @@ func GetSwitchState(Switch Switch) string {
 	response, err := client.Do(req)
 	if err != nil {
 		log.Print(err.Error())
-		os.Exit(1)
+		return "unknown"
 	}
 
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal(err)
+		return "unknown"
 	}
 	var resp HomeAssistantStateResp
 	json.Unmarshal(responseData, &resp)
@@ -56,7 +56,6 @@ func SetSwitchState(Switch Switch, State string) {
 	req, err := http.NewRequest("POST", c.HomeAssistant.URL+"/api/services/switch/"+command, bytes.NewBuffer(body))
 	if err != nil {
 		log.Print(err.Error())
-		os.Exit(1)
 	}
 
 	req.Header = http.Header{
@@ -67,7 +66,6 @@ func SetSwitchState(Switch Switch, State string) {
 	response, err := client.Do(req)
 	if err != nil {
 		log.Print(err.Error())
-		os.Exit(1)
 	}
 
 	responseData, err := ioutil.ReadAll(response.Body)

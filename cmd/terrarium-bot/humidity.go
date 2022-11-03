@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -76,7 +75,11 @@ func GetHumidity() int {
 	response, err := http.Get(c.Humidity.Url)
 	if err != nil {
 		log.Print(err.Error())
-		os.Exit(1)
+		if DayTime() {
+			return c.Humidity.Day.Maximum - 1
+		} else {
+			return c.Humidity.Night.Maximum - 1
+		}
 	}
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {

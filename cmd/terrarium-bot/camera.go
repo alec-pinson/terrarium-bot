@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -54,6 +53,5 @@ func SendCameraCommand(Command string) {
 	_, err := client.Get("https://" + c.Camera.Username + ":" + c.Camera.Password + "@" + c.Camera.Hostname + "/cgi-bin/action.cgi?cmd=" + Command)
 	if err != nil {
 		log.Println(err.Error())
-		os.Exit(1)
 	}
 }

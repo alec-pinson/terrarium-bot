@@ -30,7 +30,9 @@ func MonitorTemperature() {
 			switch temperature := GetTemperature(); {
 			case temperature >= c.Temperature.Night.Maximum+c.Alerts.Temperature.Threshold:
 				HeatingOff()
-				SendNotification("It's very hot: %vc/%vc", temperature, c.Temperature.Night.Maximum+c.Alerts.Temperature.Threshold)
+				if dayEndTime.Add(1 * time.Hour).Before(time.Now()) { // allow an hour cool down
+					SendNotification("It's very hot: %vc/%vc", temperature, c.Temperature.Night.Maximum+c.Alerts.Temperature.Threshold)
+				}
 			case temperature >= c.Temperature.Night.Maximum:
 				HeatingOff()
 			case temperature <= c.Temperature.Night.Minumum-c.Alerts.Temperature.Threshold:

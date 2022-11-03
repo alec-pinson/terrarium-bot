@@ -35,7 +35,9 @@ func MonitorHumidity() {
 			switch humidity := GetHumidity(); {
 			case humidity >= c.Humidity.Day.Maximum+c.Alerts.Humidity.Threshold:
 				FanOn()
-				SendNotification("Humidity is very high: %v%%/%v%%", humidity, c.Humidity.Day.Maximum+c.Alerts.Humidity.Threshold)
+				if lastMistTime.Add(30 * time.Minute).Before(time.Now()) {
+					SendNotification("Humidity is very high: %v%%/%v%%", humidity, c.Humidity.Day.Maximum+c.Alerts.Humidity.Threshold)
+				}
 			case humidity >= c.Humidity.Day.Maximum:
 				FanOn()
 			case humidity <= c.Humidity.Day.Minumum-c.Alerts.Humidity.Threshold:
@@ -51,7 +53,9 @@ func MonitorHumidity() {
 			switch humidity := GetHumidity(); {
 			case humidity >= c.Humidity.Night.Maximum+c.Alerts.Humidity.Threshold:
 				FanOn()
-				SendNotification("Humidity is very high: %v%%/%v%%", humidity, c.Humidity.Night.Maximum+c.Alerts.Humidity.Threshold)
+				if lastMistTime.Add(30 * time.Minute).Before(time.Now()) {
+					SendNotification("Humidity is very high: %v%%/%v%%", humidity, c.Humidity.Night.Maximum+c.Alerts.Humidity.Threshold)
+				}
 			case humidity >= c.Humidity.Night.Maximum:
 				FanOn()
 			case humidity <= c.Humidity.Night.Minumum-c.Alerts.Humidity.Threshold:

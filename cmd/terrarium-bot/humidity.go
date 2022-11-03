@@ -18,7 +18,7 @@ func MonitorMisting() {
 	for {
 		for _, m := range c.Switches {
 			if m.Type == "mister" {
-				if lastMistTime.Add(m.Sleep).Before(time.Now()) && DayTime() {
+				if lastMistTime.Add(m.Sleep).Before(time.Now()) && DayTime() && dayStartTime.Add(30*time.Minute).Before(time.Now()) { // allow 30 minutes before misting in the morning
 					log.Printf("Not misted for %s, current humidity (%v%%/%v%%). Misting now.", m.Sleep, GetHumidity(), c.Humidity.Day.Maximum)
 					Mist()
 				}

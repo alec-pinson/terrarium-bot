@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 	"time"
 
 	"github.com/stianeikeland/go-rpio/v4"
@@ -61,7 +60,7 @@ func SetFan(pinNumber int, speed int) {
 	err := rpio.Open()
 	if err != nil {
 		log.Println(err)
-		os.Exit(1)
+		return
 	}
 
 	pin := rpio.Pin(pinNumber)

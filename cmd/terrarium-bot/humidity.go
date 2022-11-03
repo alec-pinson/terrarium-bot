@@ -75,6 +75,7 @@ func GetHumidity() int {
 	response, err := http.Get(c.Humidity.Url)
 	if err != nil {
 		log.Print(err.Error())
+		log.Println("Returning Humidity.Maximum - 1")
 		if DayTime() {
 			return c.Humidity.Day.Maximum - 1
 		} else {
@@ -83,7 +84,13 @@ func GetHumidity() int {
 	}
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		log.Println("Returning Humidity.Maximum - 1")
+		if DayTime() {
+			return c.Humidity.Day.Maximum - 1
+		} else {
+			return c.Humidity.Night.Maximum - 1
+		}
 	}
 	var resp TerrariumPiSensorResp
 	json.Unmarshal(responseData, &resp)

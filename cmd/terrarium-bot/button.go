@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 	"time"
 
 	"github.com/stianeikeland/go-rpio/v4"
@@ -24,7 +23,7 @@ func MonitorButton(buttonIndex int, button GPIO) {
 
 	if err := rpio.Open(); err != nil {
 		log.Println(err)
-		os.Exit(1)
+		return
 	}
 
 	pin.Input()

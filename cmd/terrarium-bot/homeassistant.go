@@ -30,7 +30,7 @@ func GetSwitchState(Switch Switch) string {
 
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 		return "unknown"
 	}
 	var resp HomeAssistantStateResp
@@ -70,7 +70,7 @@ func SetSwitchState(Switch Switch, State string) {
 
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	var resp HomeAssistantStateResp
 	json.Unmarshal(responseData, &resp)

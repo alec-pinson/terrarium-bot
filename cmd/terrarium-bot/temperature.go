@@ -52,6 +52,7 @@ func GetTemperature() int {
 	response, err := http.Get(c.Temperature.Url)
 	if err != nil {
 		log.Print(err.Error())
+		log.Println("Returning Temperature.Maximum - 1")
 		if DayTime() {
 			return c.Temperature.Day.Maximum - 1
 		} else {
@@ -60,7 +61,13 @@ func GetTemperature() int {
 	}
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		log.Println("Returning Temperature.Maximum - 1")
+		if DayTime() {
+			return c.Temperature.Day.Maximum - 1
+		} else {
+			return c.Temperature.Night.Maximum - 1
+		}
 	}
 	var resp TerrariumPiSensorResp
 	json.Unmarshal(responseData, &resp)

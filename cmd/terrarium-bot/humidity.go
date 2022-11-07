@@ -98,6 +98,10 @@ func GetHumidity() int {
 }
 
 func Mist() {
+	if mistMode {
+		return
+	}
+
 	for _, b := range c.GPIO {
 		if b.Type == "button" && b.Action == "prevent mist" && b.LastStateChange.Add(b.Sleep).After(time.Now()) {
 			log.Printf("Misting has been prevented via button press")

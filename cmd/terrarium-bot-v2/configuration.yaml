@@ -1,0 +1,144 @@
+# Path to this config can be set via env variable 'CONFIG_FILE'
+
+day:
+  start: "08:00"
+  action:
+    - small_led.on
+    - big_led.on
+    - uvb.on
+
+night:
+  start: "21:00"
+  action:
+    - small_led.off
+    - big_led.off
+    - uvb.off
+    - camera-night-vision-1.on
+    - camera-night-vision-2.on
+    - camera-night-vision-3.on
+
+sunrise:
+  start: 07:55
+  action:
+    - small_led.on
+    - camera-night-vision-1.off
+    - camera-night-vision-1.off
+    - camera-night-vision-1.off
+
+sunset:
+  start: "20:55"
+  action:
+    - big_led.off
+
+trigger:
+  - sensor: temperature
+    when:
+      day:
+        below: 28
+      night:
+        below: 22
+    action:
+      - heater.on
+    else:
+      - heater.off
+  - sensor: humidity
+    when:
+      day:
+        above: 84
+      night:
+        above: 87
+    action:
+      - fan.on
+    else:
+      - fan.off
+  - endpoint: /prevent-mist
+    action:
+      - mister.disable.40m
+  - sensor: humidity
+    when:
+      day:
+        below: 61
+    action:
+      - small_led.off
+      - big_led.off
+      - uvb.off
+      - sleep.5m
+      - mister.on
+      - fan.disable.40m
+      - sleep.2s
+      - small_led.on
+      - big_led.on
+      - uvb.on
+
+switch:
+  - id: small_led
+    on: http://sonoff-lan-api/turnOn/small-led
+    off: http://sonoff-lan-api/turnOff/small-led
+  - id: big_led
+    on: http://meross-lan-api/turnOn/big-led
+    off: http://meross-lan-api/turnOff/big-led
+  - id: uvb
+    on: http://sonoff-lan-api/turnOn/uvb
+    off: http://sonoff-lan-api/turnOff/uvb
+  - id: heater
+    on: http://meross-lan-api/turnOn/heat
+    off: http://meross-lan-api/turnOff/heat
+  - id: mister
+    on: http://meross-lan-api/turnOn/mister
+    for: 7s # turn on for 7 seconds
+    every: 4h # every 4 hours (automatically reset if turned on before this time)
+    off: http://meross-lan-api/turnOff/mister
+    disable: 1h # do not mist for at least 1 hour after misting
+  - id: fan
+    on: http://terrarium-fan/turnOn
+    for: 10m
+    off: http://terrarium-fan/turnOff
+    disable: 10m # do not come back on again for at least 10m
+  - id: camera-night-vision-1
+    on: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=toggle-rtsp-nightvision-on
+    off: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=toggle-rtsp-nightvision-off
+  - id: camera-night-vision-2
+    on: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=ir_led_on
+    off: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=ir_led_off
+  - id: camera-night-vision-3
+    on: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=ir_cut_off
+    off: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=ir_cut_on
+
+sensor:
+  - id: temperature
+    url: http://terrarium-temp-sensor
+    jsonPath: Temperature
+  - id: humidity
+    url: http://terrarium-temp-sensor
+    jsonPath: Humidity
+
+notification:
+  - id: pushover
+    device: Alec-Phone
+    userToken: PUSHOVER_USER_TOKEN # env variable name
+    apiToken: PUSHOVER_APP_TOKEN # env variable name
+    antiSpam: 1h # only receive alerts once an hour
+
+alert:
+  - sensor: temperature
+    when:
+      day:
+        below: 22
+        above: 28
+      night:
+        below: 17
+        above: 22
+    after: 30m # only alert after 30 minutes
+    notification:
+      - pushover
+  - sensor: humidity
+    when:
+      day:
+        below: 61
+        above: 84
+      night:
+        below: 61
+        above: 84
+    after: 30m # only alert after 30 minutes
+    notification:
+      - pushover

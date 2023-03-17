@@ -7,6 +7,7 @@ import (
 var (
 	config    Config
 	apiServer APIServer
+	isTesting bool = false // flag used when testing
 )
 
 func main() {
@@ -15,9 +16,9 @@ func main() {
 
 	InitSwitches()
 	InitSensors()
-	InitTriggers()
 	InitTime()
 	InitAlerting()
+	InitTriggers()
 
 	if config.DryRun {
 		log.Println("****************************************")

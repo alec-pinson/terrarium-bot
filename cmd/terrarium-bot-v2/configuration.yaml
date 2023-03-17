@@ -62,37 +62,45 @@ trigger:
       - small_led.off
       - big_led.off
       - uvb.off
+      - small_led.disable
+      - big_led.disable
+      - uvb.disable
+      - fan.disable
       - sleep.5m
       - mister.on
       - fan.disable.40m
       - sleep.2s
+      - small_led.enable
+      - big_led.enable
+      - uvb.enable
       - small_led.on
       - big_led.on
       - uvb.on
+      - sleep.1h # do not trigger this for at least another hour
 
 switch:
   - id: small_led
-    on: http://sonoff-lan-api/turnOn/small-led
-    off: http://sonoff-lan-api/turnOff/small-led
+    on: http://sonoff-lan-api:8080/turnOn/small-led
+    off: http://sonoff-lan-api:8080/turnOff/small-led
   - id: big_led
-    on: http://meross-lan-api/turnOn/big-led
-    off: http://meross-lan-api/turnOff/big-led
+    on: http://meross-lan-api:8080/turnOn/big-led
+    off: http://meross-lan-api:8080/turnOff/big-led
   - id: uvb
-    on: http://sonoff-lan-api/turnOn/uvb
-    off: http://sonoff-lan-api/turnOff/uvb
+    on: http://sonoff-lan-api:8080/turnOn/uvb
+    off: http://sonoff-lan-api:8080/turnOff/uvb
   - id: heater
-    on: http://meross-lan-api/turnOn/heat
-    off: http://meross-lan-api/turnOff/heat
+    on: http://meross-lan-api:8080/turnOn/heat
+    off: http://meross-lan-api:8080/turnOff/heat
   - id: mister
-    on: http://meross-lan-api/turnOn/mister
+    on: http://meross-lan-api:8080/turnOn/mister
     for: 7s # turn on for 7 seconds
     every: 4h # every 4 hours (automatically reset if turned on before this time)
-    off: http://meross-lan-api/turnOff/mister
-    disable: 1h # do not mist for at least 1 hour after misting
+    off: http://meross-lan-api:8080/turnOff/mister
+
   - id: fan
-    on: http://terrarium-fan/turnOn
+    on: http://terrarium-fan-control:8080/turnOn
     for: 10m
-    off: http://terrarium-fan/turnOff
+    off: http://terrarium-fan-control:8080/turnOff
     disable: 10m # do not come back on again for at least 10m
   - id: camera-night-vision-1
     on: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=toggle-rtsp-nightvision-on
@@ -123,22 +131,22 @@ alert:
   - sensor: temperature
     when:
       day:
-        below: 22
-        above: 28
+        below: 18
+        above: 32
       night:
         below: 17
-        above: 22
+        above: 26
     after: 30m # only alert after 30 minutes
     notification:
       - pushover
   - sensor: humidity
     when:
       day:
-        below: 61
-        above: 84
+        below: 57
+        above: 89
       night:
-        below: 61
-        above: 84
+        below: 57
+        above: 89
     after: 30m # only alert after 30 minutes
     notification:
       - pushover

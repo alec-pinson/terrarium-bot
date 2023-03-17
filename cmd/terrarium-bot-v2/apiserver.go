@@ -31,7 +31,7 @@ func (apiServer APIServer) Endpoint(w http.ResponseWriter, r *http.Request) {
 		// check if this is a trigger endpoint, if so do action
 		yes, t := isTriggerEndpoint(path)
 		if yes {
-			t.doAction()
+			t.doAction("Triggered by endpoint '" + path + "'")
 		}
 	}
 }

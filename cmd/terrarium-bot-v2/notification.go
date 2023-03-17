@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -9,34 +8,21 @@ import (
 	"github.com/gregdel/pushover"
 )
 
-func getNotification(id string) (*Notification, error) {
+func GetNotification(id string) *Notification {
 	for _, n := range config.Notification {
 		if n.Id == id {
-			return &n, nil
+			return n
 		}
 	}
-	return &Notification{}, errors.New("Notification '" + id + "' not found.")
+	log.Fatalf("Notification '%s' not found in configuration.yaml", id)
+	return &Notification{}
 }
 
-func (n Notification) getIdx() (int, error) {
-	for idx, nn := range config.Notification {
-		if n.Id == nn.Id {
-			return idx, nil
-		}
-	}
-	return 0, errors.New("Notification '" + n.Id + "' not found.")
+func (n *Notification) setLastNotification() {
+	n.LastNotification = time.Now()
 }
 
-func (n Notification) setLastNotification() {
-	idx, err := n.getIdx()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	config.Notification[idx].LastNotification = time.Now()
-}
-
-func (n Notification) SendNotification(s string, v ...any) {
+func (n *Notification) SendNotification(s string, v ...any) {
 	var alertMessage string = fmt.Sprintf(s, v...)
 
 	if n.LastNotification.Add(n.AntiSpam).Before(time.Now()) {
@@ -50,10 +36,10 @@ func (n Notification) SendNotification(s string, v ...any) {
 	}
 }
 
-func (n Notification) do(alertMessage string) bool {
+func (n *Notification) do(alertMessage string) bool {
 	switch id := n.Id; {
 	case id == "pushover":
-		PushoverNotification(n, alertMessage)
+		PushoverNotification(*n, alertMessage)
 	default:
 		log.Printf("Unknown notification type '%s", id)
 		return false

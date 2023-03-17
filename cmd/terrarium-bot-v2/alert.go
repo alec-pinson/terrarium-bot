@@ -1,28 +1,19 @@
 package main
 
 import (
-	"errors"
 	"log"
 	"strings"
 	"time"
 )
 
-func getAlert(sensor string) (*Alert, error) {
+func GetAlert(sensor string) *Alert {
 	for _, a := range config.Alert {
 		if a.Sensor == sensor {
-			return &a, nil
+			return a
 		}
 	}
-	return &Alert{}, errors.New("Alert '" + sensor + "' not found.")
-}
-
-func (a Alert) getIdx() (int, error) {
-	for idx, aa := range config.Alert {
-		if a.Sensor == aa.Sensor {
-			return idx, nil
-		}
-	}
-	return 0, errors.New("Alert '" + a.Sensor + "' not found.")
+	log.Fatalf("Unable to alert on sensor '%s', not found in configuration.yaml", sensor)
+	return &Alert{}
 }
 
 func InitAlerting() {
@@ -31,13 +22,10 @@ func InitAlerting() {
 	}
 }
 
-func (a Alert) monitor() {
+func (a *Alert) monitor() {
 	// maybe add a sleep here for startup, dont want alerts straight away
 	for {
-		s, err := getSensor(a.Sensor)
-		if err != nil {
-			return
-		}
+		s := GetSensor(a.Sensor)
 		value := s.GetValue()
 		if !isSunset() && !isSunrise() && value != 0 {
 			// don't alert between sunset/sunrise or if value is 0
@@ -68,25 +56,15 @@ func (a Alert) monitor() {
 	}
 }
 
-func (a Alert) getFailTime() time.Time {
-	idx, err := a.getIdx()
-	if err != nil {
-		log.Println(err)
-		return time.Time{}
-	}
-	return config.Alert[idx].FailedTime
+func (a *Alert) getFailTime() time.Time {
+	return a.FailedTime
 }
 
-func (a Alert) setFailTime(t time.Time) {
-	idx, err := a.getIdx()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	config.Alert[idx].FailedTime = t
+func (a *Alert) setFailTime(t time.Time) {
+	a.FailedTime = t
 }
 
-func (a Alert) isFailing() bool {
+func (a *Alert) isFailing() bool {
 	failTime := a.getFailTime()
 	if time.Now().After(failTime.Add(a.After)) {
 		a.Clear()
@@ -95,7 +73,7 @@ func (a Alert) isFailing() bool {
 	return false
 }
 
-func (a Alert) Failing(s string, v ...any) {
+func (a *Alert) Failing(s string, v ...any) {
 	emptyTime := time.Time{}
 	failTime := a.getFailTime()
 	if failTime == emptyTime {
@@ -105,16 +83,13 @@ func (a Alert) Failing(s string, v ...any) {
 	}
 }
 
-func (a Alert) Clear() {
+func (a *Alert) Clear() {
 	a.setFailTime(time.Time{})
 }
 
-func (a Alert) sendNotification(s string, v ...any) {
+func (a *Alert) sendNotification(s string, v ...any) {
 	for _, nId := range a.Notification {
-		n, err := getNotification(nId)
-		if err != nil {
-			return
-		}
+		n := GetNotification(nId)
 		n.SendNotification(s, v...)
 	}
 }

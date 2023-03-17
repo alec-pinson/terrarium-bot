@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -10,22 +9,14 @@ import (
 	"time"
 )
 
-func getSensor(id string) (*Sensor, error) {
+func GetSensor(id string) *Sensor {
 	for _, s := range config.Sensor {
 		if s.Id == id {
-			return &s, nil
+			return s
 		}
 	}
-	return &Sensor{}, errors.New("Sensor '" + id + "' not found.")
-}
-
-func (s Sensor) getIdx() (int, error) {
-	for idx, ss := range config.Sensor {
-		if s.Id == ss.Id {
-			return idx, nil
-		}
-	}
-	return 0, errors.New("Sensor '" + s.Id + "' not found.")
+	log.Fatalf("Sensor '%s' not found in configuration.yaml", id)
+	return &Sensor{}
 }
 
 func InitSensors() {
@@ -34,39 +25,35 @@ func InitSensors() {
 	}
 }
 
-func (s Sensor) SetValue(value int) {
-	idx, err := s.getIdx()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	config.Sensor[idx].Value = value
+func (s *Sensor) SetValue(value int) {
+	s.Value = value
 }
 
-func (s Sensor) GetValue() int {
-	idx, err := s.getIdx()
-	if err != nil {
-		log.Println(err)
-		return 0
-	}
-	return config.Sensor[idx].Value
+func (s *Sensor) GetValue() int {
+	return s.Value
 }
 
-func (s Sensor) monitor() {
-	log.Printf("Monitoring sensor '%s'", s.Id)
+func (s *Sensor) getSensorValue() int {
+	r, err := SendRequest(s.Url)
+	if err != nil {
+		log.Println(err)
+	}
+	b, err := json.MarshalIndent(r, "", "  ")
+	if err != nil {
+		log.Println(err)
+	}
+	value := getJsonValue(string(b), s.JsonPath)
+	intValue, err := strconv.Atoi(fmt.Sprintf("%.0f", value))
+	s.SetValue(intValue)
+	return intValue
+}
+
+func (s *Sensor) monitor() {
+	val := s.getSensorValue()
+	log.Printf("Monitoring sensor '%s' (%v%s)", s.Id, val, s.Unit)
 	for {
-		r, err := SendRequest(s.Url)
-		if err != nil {
-			log.Println(err)
-		}
-		b, err := json.MarshalIndent(r, "", "  ")
-		if err != nil {
-			log.Println(err)
-		}
-		value := getJsonValue(string(b), s.JsonPath)
-		intValue, err := strconv.Atoi(fmt.Sprintf("%.0f", value))
-		s.SetValue(intValue)
-		log.Printf("%s: %v%s", strings.Title(s.Id), intValue, s.Unit)
+		val = s.getSensorValue()
+		Debug("%s: %v%s", strings.Title(s.Id), val, s.Unit)
 		time.Sleep(1 * time.Minute)
 	}
 }

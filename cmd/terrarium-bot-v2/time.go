@@ -38,22 +38,22 @@ func monitorTime() {
 		if isSunrise() {
 			Debug("Setting Sunrise configuration")
 			for _, a := range config.Sunrise.Action {
-				RunAction(a)
+				RunAction(a, "Setting sunrise configuration")
 			}
 		} else if isSunset() {
 			Debug("Setting Sunset configuration")
 			for _, a := range config.Sunset.Action {
-				RunAction(a)
+				RunAction(a, "Setting Sunset configuration")
 			}
 		} else if isDayTime() {
 			Debug("Setting Day Time configuration")
 			for _, a := range config.Day.Action {
-				RunAction(a)
+				RunAction(a, "Setting Day Time configuration")
 			}
 		} else {
 			Debug("Setting Night Time configuration")
 			for _, a := range config.Night.Action {
-				RunAction(a)
+				RunAction(a, "Setting Night Time configuration")
 			}
 		}
 		time.Sleep(1 * time.Minute)

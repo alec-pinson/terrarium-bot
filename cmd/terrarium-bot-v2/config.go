@@ -14,15 +14,15 @@ type Config struct {
 	Debug             bool
 	DryRun            bool
 	File              string
-	Day               StartAction    `yaml:"day"`
-	Night             StartAction    `yaml:"night"`
-	Sunrise           StartAction    `yaml:"sunrise"`
-	Sunset            StartAction    `yaml:"sunset"`
-	Trigger           []Trigger      `yaml:"trigger"`
-	Switch            []Switch       `yaml:"switch"`
-	Sensor            []Sensor       `yaml:"sensor"`
-	Notification      []Notification `yaml:"notification"`
-	Alert             []Alert        `yaml:"alert"`
+	Day               StartAction     `yaml:"day"`
+	Night             StartAction     `yaml:"night"`
+	Sunrise           StartAction     `yaml:"sunrise"`
+	Sunset            StartAction     `yaml:"sunset"`
+	Trigger           []*Trigger      `yaml:"trigger"`
+	Switch            []*Switch       `yaml:"switch"`
+	Sensor            []*Sensor       `yaml:"sensor"`
+	Notification      []*Notification `yaml:"notification"`
+	Alert             []*Alert        `yaml:"alert"`
 	UseInMemoryStatus bool
 }
 

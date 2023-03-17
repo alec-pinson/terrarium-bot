@@ -1,29 +1,20 @@
 package main
 
 import (
-	"errors"
 	"log"
 	"os"
 	"strings"
 	"time"
 )
 
-func getSwitch(id string) (Switch, error) {
+func GetSwitch(id string) *Switch {
 	for _, s := range config.Switch {
 		if s.Id == id {
-			return s, nil
+			return s
 		}
 	}
-	return Switch{}, errors.New("Switch '" + id + "' not found.")
-}
-
-func (s Switch) getIdx() (int, error) {
-	for idx, ss := range config.Switch {
-		if s.Id == ss.Id {
-			return idx, nil
-		}
-	}
-	return 0, errors.New("Switch '" + s.Id + "' not found.")
+	log.Fatalf("Switch '%s' not found in configuration.yaml", id)
+	return &Switch{}
 }
 
 func InitSwitches() {
@@ -37,76 +28,66 @@ func InitSwitches() {
 	}
 }
 
-func (s Switch) monitor() {
+func (s *Switch) monitor() {
 	log.Printf("Switch '%s' has been set to turn on every %s for %s (not during the night)", s.Id, s.Every, s.For)
 	if s.Disable != 0 {
 		log.Printf("Switch '%s' will not run more than once every %s", s.Id, s.Disable)
 	}
-	time.Sleep(s.Every)
+	if !isTesting {
+		// if testing, skip this
+		time.Sleep(s.Every)
+	}
 	for {
 		if isDayTime() { // maybe add something here so it doesn't mist straight after sunrise
-			lastAction, err := s.GetLastAction()
-			if err == nil {
-				// has this action been ran in the past x minutes/hours
-				if lastAction.Before(time.Now().Add(-s.Every)) {
-					// nope
-					s.TurnOn()
-					time.Sleep(s.Every)
-				}
+			lastAction := s.GetLastAction()
+			// has this action been ran in the past x minutes/hours
+			if lastAction.Before(time.Now().Add(-s.Every)) {
+				// nope
+				s.TurnOn("Scheduled every " + s.Every.String())
+				time.Sleep(s.Every)
 			}
+		}
+		if isTesting {
+			return
 		}
 		time.Sleep(30 * time.Second)
 	}
 }
 
-func (s Switch) SetLastAction() {
-	idx, err := s.getIdx()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	config.Switch[idx].LastAction = time.Now()
-	config.Switch[idx].DisableCustom = 0
+func (s *Switch) SetLastAction() {
+	s.LastAction = time.Now()
+	s.DisableCustom = 0
 }
 
-func (s Switch) GetLastAction() (time.Time, error) {
-	idx, err := s.getIdx()
-	if err != nil {
-		log.Println(err)
-		return time.Time{}, err
-	}
-	return config.Switch[idx].LastAction, nil
+func (s *Switch) GetLastAction() time.Time {
+	return s.LastAction
 }
 
-func (s Switch) getStatus() string {
-	idx, err := s.getIdx()
-	if err != nil {
-		log.Println(err)
-		return ""
-	}
-	return config.Switch[idx].Status
+func (s *Switch) getStatus() string {
+	return s.Status
 }
 
-func (s Switch) setStatus(status string) {
-	idx, err := s.getIdx()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	config.Switch[idx].Status = status
+func (s *Switch) setStatus(status string) {
+	s.Status = status
 }
 
-func (s Switch) SetDisableCustom(d time.Duration) {
-	idx, err := s.getIdx()
+func (s *Switch) SetDisableCustom(duration string, reason string) {
+	d, err := time.ParseDuration(duration)
 	if err != nil {
-		log.Println(err)
+		log.Printf("Invalid disable duration '%s'", duration)
 		return
 	}
 	s.SetLastAction()
-	config.Switch[idx].DisableCustom = d
+	s.DisableCustom = d
+	if duration == "87660h" {
+		// 10 years.. 'forever'
+		log.Printf("Switch '%s' has been disabled", s.Id)
+	} else {
+		log.Printf("Switch '%s' has been disabled, this will last %s", s.Id, d)
+	}
 }
 
-func (s Switch) isDisabled() bool {
+func (s *Switch) isDisabled() bool {
 	if s.Disable == 0 && s.DisableCustom == 0 {
 		return false
 	}
@@ -124,25 +105,15 @@ func (s Switch) isDisabled() bool {
 	return false
 }
 
-func (s Switch) setOnUrl(url string) {
-	idx, err := s.getIdx()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	config.Switch[idx].On = url
+func (s *Switch) setOnUrl(url string) {
+	s.On = url
 }
 
-func (s Switch) setOffUrl(url string) {
-	idx, err := s.getIdx()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	config.Switch[idx].On = url
+func (s *Switch) setOffUrl(url string) {
+	s.Off = url
 }
 
-func (s Switch) fixURLs() {
+func (s *Switch) fixURLs() {
 	if strings.Contains(s.On, "$") {
 		s.setOnUrl(os.ExpandEnv(s.On))
 	}
@@ -151,18 +122,13 @@ func (s Switch) fixURLs() {
 	}
 }
 
-func (s Switch) TurnOn() {
-	s, err := getSwitch(s.Id)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+func (s *Switch) TurnOn(reason string) {
 	if config.UseInMemoryStatus && s.getStatus() == "on" {
 		return
 	}
 	// check for disable parameter
 	if s.isDisabled() {
-		log.Printf("Currently disabled, cannot turn on '%s'", s.Id)
+		log.Printf("Cannot turn on '%s' as it is currently disabled (%s)", s.Id, reason)
 		return
 	}
 
@@ -171,29 +137,23 @@ func (s Switch) TurnOn() {
 		SendRequest(s.On)
 	}
 	s.setStatus("on")
-	log.Printf("Turning on '%s' (%s)", s.Id, s.On)
 	if s.For != 0 {
+		log.Printf("%s (Turning on '%s' for %v)", reason, s.Id, s.For)
 		time.Sleep(s.For)
-		if !config.DryRun {
-			SendRequest(s.Off)
-		}
-		s.setStatus("off")
-		log.Printf("Turning off '%s' (%s)", s.Id, s.Off)
+		s.TurnOff(s.For.String() + " has elapsed")
+	} else {
+		log.Printf("%s (Turning on '%s')", reason, s.Id)
 	}
 }
 
-func (s Switch) TurnOff() {
-	s, err := getSwitch(s.Id)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+func (s *Switch) TurnOff(reason string) {
 	if config.UseInMemoryStatus && s.getStatus() == "off" {
 		return
 	}
+	s.SetLastAction()
 	if !config.DryRun {
 		SendRequest(s.Off)
 	}
 	s.setStatus("off")
-	log.Printf("Turning off '%s' (%s)", s.Id, s.Off)
+	log.Printf("%s (Turning off '%s')", reason, s.Id)
 }

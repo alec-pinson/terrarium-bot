@@ -14,7 +14,9 @@ func SendRequest(url string) (map[string]interface{}, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Println(err)
+		return nil, err
 	}
+	defer resp.Body.Close()
 
 	// if non-200 status code or debug enabled then dump out request/response info
 	if config.Debug || resp.StatusCode != 200 {
@@ -32,7 +34,7 @@ func SendRequest(url string) (map[string]interface{}, error) {
 	err = decoder.Decode(&result)
 	if err != nil {
 		log.Println(err)
-		return result, err
+		return nil, err
 	}
 	return result, nil
 }

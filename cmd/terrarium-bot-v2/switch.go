@@ -82,6 +82,9 @@ func (s *Switch) SetDisableCustom(duration string, reason string) {
 	if duration == "87660h" {
 		// 10 years.. 'forever'
 		log.Printf("Switch '%s' has been disabled", s.Id)
+	} else if duration == "0" {
+		// enabled
+		log.Printf("Switch '%s' has been enabled", s.Id)
 	} else {
 		log.Printf("Switch '%s' has been disabled, this will last %s", s.Id, d)
 	}

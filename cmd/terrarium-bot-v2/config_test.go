@@ -24,8 +24,8 @@ func TestLoad(t *testing.T) {
 		Night:   StartAction{Start: "22:00", Action: []string{"do that", "then this"}},
 		Sunrise: StartAction{Start: "06:00", Action: []string{"do something"}},
 		Sunset:  StartAction{Start: "18:00", Action: []string{"do something else"}},
-		Trigger: []*Trigger{{Sensor: "sensor1", Endpoint: "endpoint1", When: When{}, Action: []string{"do this"}}},
-		Switch:  []*Switch{{Id: "switch1", On: "on", For: 5 * time.Minute, Every: 10 * time.Minute, Off: "off", Disable: 0}},
+		Trigger: []*Trigger{{Id: "tigger1", Sensor: "sensor1", Endpoint: "endpoint1", When: When{}, Action: []string{"do this"}}},
+		Switch:  []*Switch{{Id: "switch1", On: "on", Off: "off"}},
 		Sensor:  []*Sensor{{Id: "sensor1", Url: "http://sensor1.com", JsonPath: "path1", Unit: "unit1"}},
 		Notification: []*Notification{{
 			Id:               "notif1",
@@ -68,7 +68,8 @@ sunset:
   action:
     - do something else
 trigger:
-  - sensor: sensor1
+  - id: trigger1
+    sensor: sensor1
     endpoint: endpoint1
     when:
       day:
@@ -84,10 +85,7 @@ trigger:
 switch:
   - id: switch1
     on: on
-    for: 5m
-    every: 10m
     off: off
-    disable: 0
 sensor:
   - id: sensor1
     url: http://sensor1.com

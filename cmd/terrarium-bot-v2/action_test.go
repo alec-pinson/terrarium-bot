@@ -21,28 +21,28 @@ func TestRunAction(t *testing.T) {
 	config.Switch = append(config.Switch, s)
 
 	// Test the switch action turning on
-	RunAction("test-action-switch.on", "")
+	RunAction("switch.test-action-switch.on", "")
 	if s.getStatus() != "on" {
-		t.Errorf("RunAction('test-action-switch.on') failed, got %v, want %v", s.getStatus(), "on")
+		t.Errorf("RunAction('switch.test-action-switch.on') failed, got %v, want %v", s.getStatus(), "on")
 	}
 
 	// Test the switch action turning off and then disabling
 	s.setStatus("on")
-	RunAction("test-action-switch.off", "")
+	RunAction("switch.test-action-switch.off", "")
 	if s.getStatus() != "off" {
-		t.Errorf("RunAction('test-action-switch.off') failed, got %v, want %v", s.getStatus(), "off")
+		t.Errorf("RunAction('switch.test-action-switch.off') failed, got %v, want %v", s.getStatus(), "off")
 	}
-	RunAction("test-action-switch.disable.10m", "")
+	RunAction("switch.test-action-switch.disable.10m", "")
 	if s.isDisabled() != true {
-		t.Errorf("RunAction('test-action-switch.disable.10m') failed, got %v, want %v", s.isDisabled(), true)
+		t.Errorf("RunAction('switch.test-action-switch.disable.10m') failed, got %v, want %v", s.isDisabled(), true)
 	}
-	RunAction("test-action-switch.enable", "")
+	RunAction("switch.test-action-switch.enable", "")
 	if s.isDisabled() != false {
-		t.Errorf("RunAction('test-action-switch.enable') failed, got %v, want %v", s.isDisabled(), false)
+		t.Errorf("RunAction('switch.test-action-switch.enable') failed, got %v, want %v", s.isDisabled(), false)
 	}
-	RunAction("test-action-switch.disable", "")
+	RunAction("switch.test-action-switch.disable", "")
 	if s.isDisabled() != true {
-		t.Errorf("RunAction('test-action-switch.disable') failed, got %v, want %v", s.isDisabled(), true)
+		t.Errorf("RunAction('switch.test-action-switch.disable') failed, got %v, want %v", s.isDisabled(), true)
 	}
 
 	// reset

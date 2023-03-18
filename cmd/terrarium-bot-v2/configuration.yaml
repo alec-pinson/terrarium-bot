@@ -1,82 +1,94 @@
 # Path to this config can be set via env variable 'CONFIG_FILE'
 
+sunrise:
+  start: 07:55
+  action:
+    - switch.small_led.on
+    - switch.camera-night-vision-1.off
+    - switch.camera-night-vision-1.off
+    - switch.camera-night-vision-1.off
+
 day:
   start: "08:00"
   action:
-    - small_led.on
-    - big_led.on
-    - uvb.on
+    - switch.small_led.on
+    - switch.big_led.on
+    - switch.uvb.on
 
 night:
   start: "21:00"
   action:
-    - small_led.off
-    - big_led.off
-    - uvb.off
-    - camera-night-vision-1.on
-    - camera-night-vision-2.on
-    - camera-night-vision-3.on
-
-sunrise:
-  start: 07:55
-  action:
-    - small_led.on
-    - camera-night-vision-1.off
-    - camera-night-vision-1.off
-    - camera-night-vision-1.off
+    - switch.small_led.off
+    - switch.big_led.off
+    - switch.uvb.off
+    - switch.camera-night-vision-1.on
+    - switch.camera-night-vision-2.on
+    - switch.camera-night-vision-3.on
 
 sunset:
   start: "20:55"
   action:
-    - big_led.off
+    - switch.big_led.off
 
 trigger:
-  - sensor: temperature
+  - id: heating
+    sensor: temperature
     when:
       day:
         below: 28
       night:
         below: 22
     action:
-      - heater.on
+      - switch.heater.on
     else:
-      - heater.off
-  - sensor: humidity
+      - switch.heater.off
+  - id: fan
+    sensor: humidity
     when:
       day:
         above: 84
       night:
         above: 87
     action:
-      - fan.on
+      - switch.fan.on.10m
+      - switch.fan.off
+      - sleep.10m
     else:
-      - fan.off
-  - endpoint: /prevent-mist
+      - switch.fan.off
+  - id: preventMist
+    endpoint: /prevent-mist
     action:
-      - mister.disable.40m
-  - sensor: humidity
+      - trigger.mist.disable.40m # disable the below trigger for 40m
+  - id: mist
+    sensor: humidity
     when:
       day:
-        below: 61
+        below: 62 # trigger if humidity drops below 62
+        every: 4h # trigger every 4h, if not triggered by the above low humidity (just in case they want a drink!)
     action:
-      - small_led.off
-      - big_led.off
-      - uvb.off
-      - small_led.disable
-      - big_led.disable
-      - uvb.disable
-      - fan.disable
+      - switch.small_led.off
+      - switch.big_led.off
+      - switch.uvb.off
+      - switch.small_led.disable # disable other wise 'day mode' will turn these back on
+      - switch.big_led.disable # disable other wise 'day mode' will turn these back on
+      - switch.uvb.disable # disable other wise 'day mode' will turn these back on
+      - switch.fan.disable.45m # there's an action that turns on the fan if humidity is high and it's about to be
       - sleep.5m
-      - mister.on
-      - fan.disable.40m
+      - switch.mister.on.7s
       - sleep.2s
-      - small_led.enable
-      - big_led.enable
-      - uvb.enable
-      - small_led.on
-      - big_led.on
-      - uvb.on
+      - switch.small_led.enable
+      - switch.big_led.enable
+      - switch.uvb.enable
+      - switch.small_led.on
+      - switch.big_led.on
+      - switch.uvb.on
       - sleep.1h # do not trigger this for at least another hour
+  - id: test
+    when:
+      day:
+        every: 1m # trigger every 1m
+    action:
+      - switch.small_led.off
 
 switch:
   - id: small_led
@@ -93,15 +105,10 @@ switch:
     off: http://meross-lan-api:8080/turnOff/heat
   - id: mister
     on: http://meross-lan-api:8080/turnOn/mister
-    for: 7s # turn on for 7 seconds
-    every: 4h # every 4 hours (automatically reset if turned on before this time)
     off: http://meross-lan-api:8080/turnOff/mister
-
   - id: fan
     on: http://terrarium-fan-control:8080/turnOn
-    for: 10m
     off: http://terrarium-fan-control:8080/turnOff
-    disable: 10m # do not come back on again for at least 10m
   - id: camera-night-vision-1
     on: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=toggle-rtsp-nightvision-on
     off: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=toggle-rtsp-nightvision-off
@@ -113,12 +120,20 @@ switch:
     off: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=ir_cut_on
 
 sensor:
+  # - id: temperature
+  #   url: http://terrarium-temp-sensor
+  #   jsonPath: Temperature
+  # - id: humidity
+  #   url: http://terrarium-temp-sensor
+  #   jsonPath: Humidity
   - id: temperature
-    url: http://terrarium-temp-sensor
-    jsonPath: Temperature
+    url: http://terrarium-pi:8090/api/areas/fa69addf-01a0-45c0-b0c3-e1629d5a01c1/
+    jsonPath: state.sensors.current
+    unit: °C
   - id: humidity
-    url: http://terrarium-temp-sensor
-    jsonPath: Humidity
+    url: http://terrarium-pi:8090/api/areas/70a97617-5456-4f39-bbf1-c08414f5c5dd/
+    jsonPath: state.sensors.current
+    unit: "%"
 
 notification:
   - id: pushover

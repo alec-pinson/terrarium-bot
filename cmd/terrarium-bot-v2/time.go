@@ -34,7 +34,6 @@ func InitTime() {
 
 func monitorTime() {
 	for {
-		time.Sleep(sleepingAction)
 		if isSunrise() {
 			Debug("Setting Sunrise configuration")
 			for _, a := range config.Sunrise.Action {

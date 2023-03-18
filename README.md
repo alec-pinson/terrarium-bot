@@ -39,41 +39,53 @@ switch:
 This heater is controlled by the below trigger, e.g. heating on when below 28 in the day, on when below 22 at night otherwise the heating is off:-
 ```yaml
 trigger:
-  - sensor: temperature
+  - id: heating
+    sensor: temperature
     when:
       day:
         below: 28
       night:
         below: 22
     action:
-      - heater.on
+      - switch.heater.on
     else:
-      - heater.off
+      - switch.heater.off
 ```
 
 Multiple actions can be given to a trigger, e.g. turning lights off for 5 minutes before misting (I like to give my geckos a warning they're about to get sprayed in the face :slightly_smiling_face:):-
 ```yaml
-  - sensor: humidity
+  - id: mist
+    sensor: humidity
     when:
       day:
-        below: 61
+        below: 62 # trigger if humidity drops below 62
+        every: 4h # trigger every 4h, if not triggered by the above low humidity (just in case they want a drink!)
     action:
-      - small_led.off
-      - big_led.off
-      - uvb.off
+      - switch.small_led.off
+      - switch.big_led.off
+      - switch.uvb.off
+      - switch.small_led.disable # disable other wise 'day mode' will turn these back on
+      - switch.big_led.disable # disable other wise 'day mode' will turn these back on
+      - switch.uvb.disable # disable other wise 'day mode' will turn these back on
+      - switch.fan.disable.45m # there's an action that turns on the fan if humidity is high and it's about to be
       - sleep.5m
-      - mister.on
+      - switch.mister.on.7s
       - sleep.2s
-      - small_led.on
-      - big_led.on
-      - uvb.on
+      - switch.small_led.enable
+      - switch.big_led.enable
+      - switch.uvb.enable
+      - switch.small_led.on
+      - switch.big_led.on
+      - switch.uvb.on
+      - sleep.1h # do not trigger this for at least another hour
 ```
 
 Call an action from a URL endpoint, I use my gpio-to-api app to monitor a gpio button, when pressed it can trigger a call to a URL (I press my button before openning the terrarium doors as humidity drops and triggers misting otherwise):-
 ```yaml
-  - endpoint: /prevent-mist
+  - id: preventMist
+    endpoint: /prevent-mist
     action:
-      - mister.disable.40m
+      - trigger.mist.disable.40m # disable the above trigger for 40m
 ```
 
 ## The End

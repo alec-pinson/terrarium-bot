@@ -33,23 +33,23 @@ type StartAction struct {
 }
 
 type Trigger struct {
-	Sensor   string   `yaml:"sensor"`
-	Endpoint string   `yaml:"endpoint"`
-	When     When     `yaml:"when"`
-	Action   []string `yaml:"action"`
-	Else     []string `yaml:"else"`
+	Id            string   `yaml:"id"`
+	Sensor        string   `yaml:"sensor"`
+	Endpoint      string   `yaml:"endpoint"`
+	When          When     `yaml:"when"`
+	Action        []string `yaml:"action"`
+	Else          []string `yaml:"else"`
+	Disabled      time.Duration
+	LastTriggered time.Time
 }
 
 type Switch struct {
-	Id            string        `yaml:"id"`
-	On            string        `yaml:"on"`
-	For           time.Duration `yaml:"for"`
-	Every         time.Duration `yaml:"every"`
-	Off           string        `yaml:"off"`
-	Disable       time.Duration `yaml:"disable"`
-	DisableCustom time.Duration
-	Status        string // on/off
-	LastAction    time.Time
+	Id         string `yaml:"id"`
+	On         string `yaml:"on"`
+	Off        string `yaml:"off"`
+	Disabled   time.Duration
+	Status     string // on/off
+	LastAction time.Time
 }
 
 type Sensor struct {
@@ -81,12 +81,14 @@ type Alert struct {
 
 type When struct {
 	Day struct {
-		Below int `yaml:"below"`
-		Above int `yaml:"above"`
+		Below int           `yaml:"below"`
+		Above int           `yaml:"above"`
+		Every time.Duration `yaml:"every"`
 	} `yaml:"day"`
 	Night struct {
-		Below int `yaml:"below"`
-		Above int `yaml:"above"`
+		Below int           `yaml:"below"`
+		Above int           `yaml:"above"`
+		Every time.Duration `yaml:"every"`
 	} `yaml:"night"`
 }
 

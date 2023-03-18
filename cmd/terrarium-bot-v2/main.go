@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 )
 
 var (
@@ -13,12 +14,6 @@ var (
 func main() {
 	log.Println("Starting...")
 	config = config.Load()
-
-	InitSwitches()
-	InitSensors()
-	InitTime()
-	InitAlerting()
-	InitTriggers()
 
 	if config.DryRun {
 		log.Println("****************************************")
@@ -34,5 +29,14 @@ func main() {
 		log.Println("*****************************************************")
 	}
 
+	InitSensors()
+	time.Sleep(5 * time.Second) // give abit of time for any sensors to collect data
+	InitSwitches()
+	InitTime()
+	InitAlerting()
 	apiServer.Start()
+	InitTriggers()
+
+	// don't die
+	select {}
 }

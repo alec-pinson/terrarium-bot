@@ -15,6 +15,13 @@ func main() {
 	log.Println("Starting...")
 	config = config.Load()
 
+	if config.Debug {
+		log.Println("****************************************")
+		log.Println("****  Debug mode currently active!  ****")
+		log.Println("**** There will be extra log output ****")
+		log.Println("****************************************")
+	}
+
 	if config.DryRun {
 		log.Println("****************************************")
 		log.Println("**** Dry run mode currently active! ****")

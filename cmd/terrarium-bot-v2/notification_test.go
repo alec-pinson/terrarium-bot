@@ -32,7 +32,7 @@ func TestSetLastNotification(t *testing.T) {
 
 func TestSendNotification(t *testing.T) {
 	// do not send a real notification
-	config.Debug = true
+	config.DryRun = true
 
 	config.Notification = []*Notification{
 		{
@@ -50,6 +50,6 @@ func TestSendNotification(t *testing.T) {
 	}
 
 	// reset
-	config.Debug = false
+	config.DryRun = false
 	log.SetOutput(os.Stderr)
 }

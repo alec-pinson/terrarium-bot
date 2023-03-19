@@ -64,7 +64,7 @@ trigger:
     sensor: humidity
     when:
       day:
-        below: 62 # trigger if humidity drops below 62
+        below: 61 # trigger if humidity drops below 61
         every: 4h # trigger every 4h, if not triggered by the above low humidity (just in case they want a drink!)
     action:
       - switch.small_led.off
@@ -124,10 +124,10 @@ switch:
 
 sensor:
   # - id: temperature
-  #   url: http://terrarium-temp-sensor
+  #   url: http://terrarium-temp-sensor:8080
   #   jsonPath: Temperature
   # - id: humidity
-  #   url: http://terrarium-temp-sensor
+  #   url: http://terrarium-temp-sensor:8080
   #   jsonPath: Humidity
   - id: temperature
     url: http://terrarium-pi:8090/api/areas/fa69addf-01a0-45c0-b0c3-e1629d5a01c1/

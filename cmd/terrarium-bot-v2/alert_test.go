@@ -59,7 +59,7 @@ func TestIsFailing(t *testing.T) {
 
 func TestSendAlertNotification(t *testing.T) {
 	// do not send a real notification
-	config.Debug = true
+	config.DryRun = true
 	config.Notification = []*Notification{
 		{
 			Id:     "pushover",
@@ -76,6 +76,6 @@ func TestSendAlertNotification(t *testing.T) {
 	}
 
 	// reset
-	config.Debug = false
+	config.DryRun = false
 	log.SetOutput(os.Stderr)
 }

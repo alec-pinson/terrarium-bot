@@ -45,8 +45,8 @@ func TestSendNotification(t *testing.T) {
 	var buf bytes.Buffer
 	log.SetOutput(&buf)
 	a.sendNotification("Test notification")
-	if !strings.Contains(buf.String(), "Sent alert:") {
-		t.Errorf("Log should contain 'Sent alert:' but doesn't, log: %q", buf.String())
+	if !strings.Contains(buf.String(), "Alert:") {
+		t.Errorf("Log should contain 'Alert:' but doesn't, log: %q", buf.String())
 	}
 
 	// reset

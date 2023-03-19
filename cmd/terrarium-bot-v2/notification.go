@@ -29,7 +29,7 @@ func (n *Notification) SendNotification(s string, v ...any) {
 		// make sure we're not spamming
 		if n.do(alertMessage) {
 			n.setLastNotification()
-			log.Println("Sent alert: " + alertMessage)
+			log.Println("Alert: " + alertMessage)
 		}
 	} else {
 		Debug("Alert not sent: %s (anti-spam @ %s)", alertMessage, n.AntiSpam)

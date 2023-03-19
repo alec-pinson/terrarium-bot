@@ -17,86 +17,126 @@ example actions list
 	- trigger.mist.disable
 	- trigger.mist.disable.40m
 	- trigger.mist.enable
+	- alert.humidity.disable
+	- alert.humidity.disable.1h
+	- alert.humidity.enable
 */
 
-func RunAction(a string, reason string) {
+func RunAction(a string, reason string) bool {
 	Debug("Running action '%s'", a)
 	args := strings.Split(a, ".")
 
 	if len(args) <= 1 {
 		log.Printf("Invalid action '%s'", a)
-		return
+		return false
 	}
 
 	switch args[0] {
 	case "sleep":
-		runSleepAction(args, reason)
+		return runSleepAction(args, reason)
 	case "trigger":
-		runTriggerAction(args, reason)
+		return runTriggerAction(args, reason)
 	case "switch":
-		runSwitchAction(args, reason)
+		return runSwitchAction(args, reason)
+	case "alert":
+		return runAlertAction(args, reason)
 	default:
 		log.Printf("Unknown action '%s'", strings.Join(args, "."))
+		return false
 	}
 }
 
-func runSleepAction(args []string, reason string) {
+func runSleepAction(args []string, reason string) bool {
 	sleepDuration, err := time.ParseDuration(args[1])
 	if err != nil {
 		log.Printf("Invalid sleep duration '%s'", args[1])
-		return
+		return false
 	}
 	time.Sleep(sleepDuration)
+	return true
 }
 
-func runTriggerAction(args []string, reason string) {
+func runTriggerAction(args []string, reason string) bool {
 	t := GetTrigger(args[1])
 	switch strings.ToLower(args[2]) {
 	case "disable":
 		if len(args) == 4 {
 			t.Disable(args[3], reason)
-			return
+			return true
 		}
 		if len(args) == 3 {
 			// disable 'forever'
 			t.Disable("", reason)
-			return
+			return true
 		}
 		log.Printf("Invalid parameters for disable action '%s'", strings.Join(args, "."))
+		return false
 	case "enable":
 		t.Enable(reason)
+		return true
 	default:
-		log.Printf("Unknown switch action '%s'", strings.Join(args, "."))
+		log.Printf("Unknown trigger action '%s'", strings.Join(args, "."))
+		return false
 	}
 }
 
-func runSwitchAction(args []string, reason string) {
+func runSwitchAction(args []string, reason string) bool {
 	s := GetSwitch(args[1])
 	switch strings.ToLower(args[2]) {
 	case "on":
 		if len(args) == 4 {
 			// set on for duration
 			s.TurnOn(args[3], reason)
+			return true
 		} else {
 			// turn on forever
 			s.TurnOn("", reason)
+			return true
 		}
 	case "off":
 		s.TurnOff(reason)
+		return true
 	case "disable":
 		if len(args) == 4 {
 			s.Disable(args[3], reason)
-			return
+			return true
 		}
 		if len(args) == 3 {
 			// disable 'forever'
 			s.Disable("", reason)
-			return
+			return true
 		}
 		log.Printf("Invalid parameters for disable action '%s'", strings.Join(args, "."))
+		return false
 	case "enable":
 		s.Enable(reason)
+		return true
 	default:
 		log.Printf("Unknown switch action '%s'", strings.Join(args, "."))
+		return false
+	}
+}
+
+func runAlertAction(args []string, reason string) bool {
+	a := GetAlert(args[1])
+	switch strings.ToLower(args[2]) {
+	case "disable":
+		if len(args) == 4 {
+			a.Disable(args[3], reason)
+			return true
+		}
+		if len(args) == 3 {
+			// disable 'forever'
+			a.Disable("", reason)
+			return true
+		}
+		log.Printf("Invalid parameters for disable action '%s'", strings.Join(args, "."))
+		return false
+	case "enable":
+		a.Enable(reason)
+		return true
+	default:
+		log.Printf("Unknown alert action '%s'", strings.Join(args, "."))
+		return false
 	}
 }

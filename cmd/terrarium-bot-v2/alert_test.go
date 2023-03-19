@@ -12,15 +12,19 @@ import (
 )
 
 func TestGetAlert(t *testing.T) {
+	config.Sensor = []*Sensor{
+		{Id: "temperature"},
+		{Id: "humidity"},
+	}
 	config.Alert = []*Alert{
-		{Sensor: "temperature"},
-		{Sensor: "humidity"},
+		{Id: "test-alert-1", Sensor: "temperature"},
+		{Id: "test-alert-2", Sensor: "humidity"},
 	}
 
-	alert := GetAlert("temperature")
+	alert := GetAlert("test-alert-1")
 	assert.NotNil(t, alert)
 
-	alert = GetAlert("humidity")
+	alert = GetAlert("test-alert-2")
 	assert.NotNil(t, alert)
 }
 

@@ -72,11 +72,14 @@ type Notification struct {
 }
 
 type Alert struct {
+	Id           string        `yaml:"id"`
 	Sensor       string        `yaml:"sensor"`
 	When         When          `yaml:"when"`
 	After        time.Duration `yaml:"after"`
 	Notification []string      `yaml:"notification"`
 	FailedTime   time.Time
+	Disabled     time.Duration
+	LastAlerted  time.Time
 }
 
 type When struct {

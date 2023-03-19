@@ -6,13 +6,17 @@ import (
 	"time"
 )
 
-func GetAlert(sensor string) *Alert {
+func GetAlert(id string) *Alert {
 	for _, a := range config.Alert {
-		if a.Sensor == sensor {
+		if a.Id == id {
+			if GetSensor(a.Sensor) == nil {
+				log.Fatalf("Unable to alert on '%s' as sensor '%s', not found in configuration.yaml", id, a.Sensor)
+				return &Alert{}
+			}
 			return a
 		}
 	}
-	log.Fatalf("Unable to alert on sensor '%s', not found in configuration.yaml", sensor)
+	log.Fatalf("Alert for '%s' not found in configuration.yaml", id)
 	return &Alert{}
 }
 
@@ -92,4 +96,38 @@ func (a *Alert) sendNotification(s string, v ...any) {
 		n := GetNotification(nId)
 		n.SendNotification(s, v...)
 	}
+}
+
+func (a *Alert) Enable(reason string) {
+	a.Disabled = 0
+	log.Printf("Alert '%s' has been enabled", a.Id)
+}
+
+func (a *Alert) Disable(duration string, reason string) {
+	if duration == "" {
+		// 10 years.. 'forever'
+		duration = "87660h"
+	}
+	d, err := time.ParseDuration(duration)
+	if err != nil {
+		log.Printf("Invalid disable duration '%s'", duration)
+		return
+	}
+	a.LastAlerted = time.Now()
+	a.Disabled = d
+	if duration == "87660h" {
+		log.Printf("Alert '%s' has been disabled", a.Id)
+	} else {
+		log.Printf("Alert '%s' has been disabled, this will last %s", a.Id, d)
+	}
+}
+
+func (a *Alert) isDisabled() bool {
+	if a.Disabled == 0 {
+		return false
+	}
+	if a.LastAlerted.Add(a.Disabled).After(time.Now()) {
+		return true
+	}
+	return false
 }

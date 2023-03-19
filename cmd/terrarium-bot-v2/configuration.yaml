@@ -3,10 +3,11 @@
 sunrise:
   start: 07:55
   action:
+    - trigger.mist.disable.35m # don't mist for the first 35 mins in the morning
     - switch.small_led.on
     - switch.camera-night-vision-1.off
-    - switch.camera-night-vision-1.off
-    - switch.camera-night-vision-1.off
+    - switch.camera-night-vision-2.off
+    - switch.camera-night-vision-3.off
 
 day:
   start: "08:00"
@@ -73,6 +74,7 @@ trigger:
       - switch.big_led.disable # disable other wise 'day mode' will turn these back on
       - switch.uvb.disable # disable other wise 'day mode' will turn these back on
       - switch.fan.disable.45m # there's an action that turns on the fan if humidity is high and it's about to be
+      - alert.humidity.disable.1h # disable humidity alert for 1 hour
       - sleep.5m
       - switch.mister.on.7s
       - sleep.2s
@@ -83,12 +85,12 @@ trigger:
       - switch.big_led.on
       - switch.uvb.on
       - sleep.1h # do not trigger this for at least another hour
-  - id: test
-    when:
-      day:
-        every: 1m # trigger every 1m
-    action:
-      - switch.small_led.off
+  # - id: test
+  #   when:
+  #     day:
+  #       every: 1m # trigger every 1m
+  #   action:
+  #     - switch.small_led.off
 
 switch:
   - id: small_led
@@ -143,7 +145,8 @@ notification:
     antiSpam: 1h # only receive alerts once an hour
 
 alert:
-  - sensor: temperature
+  - id: temperature
+    sensor: temperature
     when:
       day:
         below: 18
@@ -154,7 +157,8 @@ alert:
     after: 30m # only alert after 30 minutes
     notification:
       - pushover
-  - sensor: humidity
+  - id: humidity
+    sensor: humidity
     when:
       day:
         below: 57

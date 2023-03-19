@@ -68,6 +68,7 @@ Multiple actions can be given to a trigger, e.g. turning lights off for 5 minute
       - switch.big_led.disable # disable other wise 'day mode' will turn these back on
       - switch.uvb.disable # disable other wise 'day mode' will turn these back on
       - switch.fan.disable.45m # there's an action that turns on the fan if humidity is high and it's about to be
+      - alert.humidity.disable.1h # disable humidity alert for 1 hour
       - sleep.5m
       - switch.mister.on.7s
       - sleep.2s
@@ -87,6 +88,23 @@ Call an action from a URL endpoint, I use my gpio-to-api app to monitor a gpio b
     action:
       - trigger.mist.disable.40m # disable the above trigger for 40m
 ```
+
+## Example Actions List
+| Action                    | Description                             |
+|---------------------------|-----------------------------------------|
+| sleep.5s                  | Pause execution for 5 seconds           |
+| switch.fan.on             | Turn on the fan                         |
+| switch.fan.on.10m         | Turn on the fan for 10 minutes          |
+| switch.fan.off            | Turn off the fan                        |
+| switch.fan.disable        | Disable the fan control switch          |
+| switch.fan.disable.45m    | Disable the fan control switch for 45m  |
+| switch.fan.enable         | Enable the fan control switch           |
+| trigger.mist.disable      | Disable the mist trigger                |
+| trigger.mist.disable.40m  | Disable the mist trigger for 40 minutes |
+| trigger.mist.enable       | Enable the mist trigger                 |
+| alert.humidity.disable    | Disable the humidity alert              |
+| alert.humidity.disable.1h | Disable the humidity alert for 1 hour   |
+| alert.humidity.enable     | Enable the humidity alert               |
 
 ## The End
 Hopefully the configuration should be pretty self explanitory, if you get stuck or there are any features you think might be missing then feel free to create an issue :slightly_smiling_face:.

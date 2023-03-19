@@ -13,7 +13,7 @@ func GetTrigger(id string) *Trigger {
 		}
 	}
 	log.Fatalf("Trigger '%s' not found in configuration.yaml", id)
-	return &Trigger{}
+	return nil
 }
 
 func InitTriggers() {
@@ -96,7 +96,7 @@ func (t *Trigger) monitor() {
 		if runAction {
 			t.doAction(reason)
 			t.LastTriggered = time.Now() // update the last triggered time
-		} else {
+		} else if valueSet {
 			// do else action
 			if isDayTime() {
 				// day time

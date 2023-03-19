@@ -15,6 +15,8 @@ I currently run this in a Kubernetes cluster (3 Raspberry Pis using [K3S](https:
 - Easy to add custom API endpoints that can be called which then run actions (see example below)
 - Time based switches, set what should be on during the day, what should be on during the night
 - Sunset/sunrise mode, if you want to turn on some lights a few minutes before others in the morning
+- Will send a notification if a sensor stops responding
+- Will send a notification if a switch stops responding
 - Dry run mode using set `DRY_RUN=true` no switches will be turned on or off
 - Debug mode for extra output - `DEBUG=true`
 

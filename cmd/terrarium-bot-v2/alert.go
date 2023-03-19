@@ -10,13 +10,13 @@ func GetAlert(id string) *Alert {
 		if a.Id == id {
 			if GetSensor(a.Sensor) == nil {
 				log.Fatalf("Unable to alert on '%s' as sensor '%s', not found in configuration.yaml", id, a.Sensor)
-				return &Alert{}
+				return nil
 			}
 			return a
 		}
 	}
 	log.Fatalf("Alert for '%s' not found in configuration.yaml", id)
-	return &Alert{}
+	return nil
 }
 
 func InitAlerting() {

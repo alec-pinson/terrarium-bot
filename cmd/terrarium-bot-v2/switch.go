@@ -14,7 +14,7 @@ func GetSwitch(id string) *Switch {
 		}
 	}
 	log.Fatalf("Switch '%s' not found in configuration.yaml", id)
-	return &Switch{}
+	return nil
 }
 
 func InitSwitches() {
@@ -134,7 +134,13 @@ func (s *Switch) TurnOn(For string, Reason string) {
 
 	s.SetLastAction()
 	if !config.DryRun {
-		SendRequest(s.On)
+		_, err := SendRequest(s.On)
+		if err != nil {
+			log.Printf("Switch Offline: %s", s.Id)
+			for _, n := range config.Notification {
+				n.SendNotification("Currently unable to turn on switch '%s'. Please check the logs.", s.Id)
+			}
+		}
 	}
 	s.setStatus("on")
 	if For != "" {
@@ -153,7 +159,13 @@ func (s *Switch) TurnOff(reason string) {
 	}
 	s.SetLastAction()
 	if !config.DryRun {
-		SendRequest(s.Off)
+		_, err := SendRequest(s.Off)
+		if err != nil {
+			log.Printf("Switch Offline: %s", s.Id)
+			for _, n := range config.Notification {
+				n.SendNotification("Currently unable to turn off switch '%s'. Please check the logs.", s.Id)
+			}
+		}
 	}
 	s.setStatus("off")
 	log.Printf("Switch Off: '%s' (%s)", s.Id, reason)

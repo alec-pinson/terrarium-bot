@@ -16,7 +16,7 @@ func GetSensor(id string) *Sensor {
 		}
 	}
 	log.Fatalf("Sensor '%s' not found in configuration.yaml", id)
-	return &Sensor{}
+	return nil
 }
 
 func InitSensors() {
@@ -45,7 +45,17 @@ func (s *Sensor) getSensorValue() int {
 	value := getJsonValue(string(b), s.JsonPath)
 	intValue, err := strconv.Atoi(fmt.Sprintf("%.0f", value))
 	s.SetValue(intValue)
+	s.checkValue()
 	return intValue
+}
+
+func (s *Sensor) checkValue() {
+	if s.GetValue() == 0 {
+		log.Printf("Sensor Offline: '%s'", s.Id)
+		for _, n := range config.Notification {
+			n.SendNotification("Currently unable to get value for sensor '%s'. Please check the logs.", s.Id)
+		}
+	}
 }
 
 func (s *Sensor) monitor() {

@@ -48,7 +48,7 @@ func (n *Notification) do(alertMessage string) bool {
 }
 
 func PushoverNotification(n Notification, alertMessage string) {
-	if config.Debug {
+	if config.Debug || config.DryRun {
 		return
 	}
 	app := pushover.New(n.APITokenValue)

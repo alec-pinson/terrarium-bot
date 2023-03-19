@@ -75,6 +75,7 @@ trigger:
       - switch.uvb.disable # disable other wise 'day mode' will turn these back on
       - switch.fan.disable.45m # there's an action that turns on the fan if humidity is high and it's about to be
       - alert.humidity.disable.1h # disable humidity alert for 1 hour
+      - echo.Misting will begin in 5m
       - sleep.5m
       - switch.mister.on.7s
       - sleep.2s

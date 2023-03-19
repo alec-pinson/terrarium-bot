@@ -260,7 +260,7 @@ func TestSwitchTurnOn(t *testing.T) {
 	config.UseInMemoryStatus = true
 	s.TurnOn("", "")
 
-	if strings.Contains(buf.String(), "Turning on 'on-test'") {
+	if strings.Contains(buf.String(), "Switch On 'on-test'") {
 		t.Errorf("Switch turned on again while 'USE_IN_MEMORY_STATUS' was set")
 	}
 
@@ -268,8 +268,8 @@ func TestSwitchTurnOn(t *testing.T) {
 	config.UseInMemoryStatus = false
 	buf.Reset()
 	s.TurnOn("", "")
-	if !strings.Contains(buf.String(), "Turning on 'on-test'") {
-		t.Errorf("Switch did not turn on again while 'USE_IN_MEMORY_STATUS' was unset")
+	if !strings.Contains(buf.String(), "Switch On: 'on-test'") {
+		t.Errorf("Switch did not turn on again while 'USE_IN_MEMORY_STATUS' was unset, got %v", buf.String())
 	}
 
 	// Test case 4: Switch turns off after 'for' duration

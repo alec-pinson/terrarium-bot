@@ -20,6 +20,7 @@ example actions list
 	- alert.humidity.disable
 	- alert.humidity.disable.1h
 	- alert.humidity.enable
+	- echo.Misting will begin in 5m
 */
 
 func RunAction(a string, reason string) bool {
@@ -40,10 +41,18 @@ func RunAction(a string, reason string) bool {
 		return runSwitchAction(args, reason)
 	case "alert":
 		return runAlertAction(args, reason)
+	case "echo":
+		return runEchoAction(args, reason)
 	default:
 		log.Printf("Unknown action '%s'", strings.Join(args, "."))
 		return false
 	}
+}
+
+func runEchoAction(args []string, reason string) bool {
+	message := strings.Join(args, ".")
+	log.Println(message[5:]) // print without echo.
+	return true
 }
 
 func runSleepAction(args []string, reason string) bool {

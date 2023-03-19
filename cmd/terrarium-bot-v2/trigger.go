@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -20,11 +19,12 @@ func GetTrigger(id string) *Trigger {
 func InitTriggers() {
 	for _, t := range config.Trigger {
 		go t.monitor()
+		time.Sleep(1 * time.Second) // stop triggers clashing during startup
 	}
 }
 
-func GenerateReason(sensor string, value int, unit string, maxValue int) string {
-	return strings.Title(sensor) + " currently " + strconv.Itoa(value) + unit + "/" + strconv.Itoa(maxValue) + unit
+func GenerateReason(value int, unit string, maxValue int) string {
+	return strconv.Itoa(value) + unit + "/" + strconv.Itoa(maxValue) + unit
 }
 
 func (t *Trigger) monitor() {
@@ -71,10 +71,10 @@ func (t *Trigger) monitor() {
 		if isDayTime() {
 			if valueSet && dayAbove && value > t.When.Day.Above {
 				runAction = true
-				reason = GenerateReason(t.Sensor, value, s.Unit, t.When.Day.Above)
+				reason = GenerateReason(value, s.Unit, t.When.Day.Above)
 			} else if valueSet && dayBelow && value < t.When.Day.Below {
 				runAction = true
-				reason = GenerateReason(t.Sensor, value, s.Unit, t.When.Day.Below)
+				reason = GenerateReason(value, s.Unit, t.When.Day.Below)
 			} else if dayEvery && t.LastTriggered.Before(time.Now().Add(-t.When.Day.Every)) {
 				reason = "Trigger '" + t.Id + "' scheduled every " + t.When.Day.Every.String()
 				runAction = true
@@ -82,10 +82,10 @@ func (t *Trigger) monitor() {
 		} else {
 			if valueSet && nightAbove && value > t.When.Night.Above {
 				runAction = true
-				reason = GenerateReason(t.Sensor, value, s.Unit, t.When.Night.Above)
+				reason = GenerateReason(value, s.Unit, t.When.Night.Above)
 			} else if valueSet && nightBelow && value < t.When.Night.Below {
 				runAction = true
-				reason = GenerateReason(t.Sensor, value, s.Unit, t.When.Night.Below)
+				reason = GenerateReason(value, s.Unit, t.When.Night.Below)
 			} else if nightEvery && t.LastTriggered.Before(time.Now().Add(-t.When.Night.Every)) {
 				reason = "Trigger '" + t.Id + "' scheduled every " + t.When.Night.Every.String()
 				runAction = true
@@ -94,7 +94,6 @@ func (t *Trigger) monitor() {
 
 		// run actions/else actions
 		if runAction {
-			log.Println(reason)
 			t.doAction(reason)
 			t.LastTriggered = time.Now() // update the last triggered time
 		} else {
@@ -102,17 +101,17 @@ func (t *Trigger) monitor() {
 			if isDayTime() {
 				// day time
 				if dayAbove {
-					reason = GenerateReason(t.Sensor, value, s.Unit, t.When.Day.Above)
+					reason = GenerateReason(value, s.Unit, t.When.Day.Above)
 				} else if dayBelow {
-					reason = GenerateReason(t.Sensor, value, s.Unit, t.When.Day.Below)
+					reason = GenerateReason(value, s.Unit, t.When.Day.Below)
 				}
 			} else {
 				// night time
 				if nightAbove {
-					reason = GenerateReason(t.Sensor, value, s.Unit, t.When.Night.Above)
+					reason = GenerateReason(value, s.Unit, t.When.Night.Above)
 				}
 				if nightBelow {
-					reason = GenerateReason(t.Sensor, value, s.Unit, t.When.Night.Below)
+					reason = GenerateReason(value, s.Unit, t.When.Night.Below)
 				}
 			}
 			t.doElseAction(reason)
@@ -148,7 +147,7 @@ func (t *Trigger) doElseAction(reason string) {
 
 func (t *Trigger) Enable(reason string) {
 	t.Disabled = 0
-	log.Printf("Trigger '%s' has been enabled", t.Id)
+	log.Printf("Trigger Enabled: '%s'", t.Id)
 }
 
 func (t *Trigger) Disable(duration string, reason string) {
@@ -164,9 +163,9 @@ func (t *Trigger) Disable(duration string, reason string) {
 	t.LastTriggered = time.Now()
 	t.Disabled = d
 	if duration == "87660h" {
-		log.Printf("Trigger '%s' has been disabled", t.Id)
+		log.Printf("Trigger Disabled: '%s'", t.Id)
 	} else {
-		log.Printf("Trigger '%s' has been disabled, this will last %s", t.Id, d)
+		log.Printf("Trigger Disabled: '%s' for %s", t.Id, d)
 	}
 }
 

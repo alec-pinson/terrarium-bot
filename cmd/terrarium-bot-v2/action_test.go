@@ -1,6 +1,10 @@
 package main
 
 import (
+	"bytes"
+	"log"
+	"os"
+	"strings"
 	"testing"
 	"time"
 )
@@ -8,6 +12,17 @@ import (
 func TestRunAction(t *testing.T) {
 	// disable http calls when turning on/off switches
 	config.DryRun = true
+
+	//
+	// Echo action
+	//
+	var buf bytes.Buffer
+	log.SetOutput(&buf)
+	RunAction("echo.Hello this is a test", "")
+	if !strings.Contains(buf.String(), "Hello this is a test") {
+		t.Errorf("unexpected log output: %q", buf.String())
+	}
+	log.SetOutput(os.Stderr)
 
 	//
 	// Sleep action

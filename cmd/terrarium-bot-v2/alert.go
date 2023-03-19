@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"strings"
 	"time"
 )
 
@@ -36,9 +35,9 @@ func (a *Alert) monitor() {
 			if isDayTime() {
 				// day time
 				if value > a.When.Day.Above {
-					a.Failing("%s is currently %v%s/%v%s", strings.Title(a.Sensor), value, s.Unit, a.When.Day.Above, s.Unit)
+					a.Failing("%v%s/%v%s", value, s.Unit, a.When.Day.Above, s.Unit)
 				} else if value < a.When.Day.Below {
-					a.Failing("%s is currently %v%s/%v%s", strings.Title(a.Sensor), value, s.Unit, a.When.Day.Below, s.Unit)
+					a.Failing("%v%s/%v%s", value, s.Unit, a.When.Day.Below, s.Unit)
 				} else {
 					// clear alerts
 					a.Clear()
@@ -46,9 +45,9 @@ func (a *Alert) monitor() {
 			} else {
 				// night time
 				if value > a.When.Night.Above {
-					a.Failing("%s is currently %v%s/%v%s", strings.Title(a.Sensor), value, s.Unit, a.When.Night.Above, s.Unit)
+					a.Failing("%v%s/%v%s", value, s.Unit, a.When.Night.Above, s.Unit)
 				} else if value < a.When.Night.Below {
-					a.Failing("%s is currently %v%s/%v%s", strings.Title(a.Sensor), value, s.Unit, a.When.Night.Below, s.Unit)
+					a.Failing("%v%s/%v%s", value, s.Unit, a.When.Night.Below, s.Unit)
 				} else {
 					// clear alerts
 					a.Clear()
@@ -100,7 +99,7 @@ func (a *Alert) sendNotification(s string, v ...any) {
 
 func (a *Alert) Enable(reason string) {
 	a.Disabled = 0
-	log.Printf("Alert '%s' has been enabled", a.Id)
+	log.Printf("Alert Enabled: '%s'", a.Id)
 }
 
 func (a *Alert) Disable(duration string, reason string) {
@@ -110,15 +109,15 @@ func (a *Alert) Disable(duration string, reason string) {
 	}
 	d, err := time.ParseDuration(duration)
 	if err != nil {
-		log.Printf("Invalid disable duration '%s'", duration)
+		log.Printf("Invalid alert disable duration '%s'", duration)
 		return
 	}
 	a.LastAlerted = time.Now()
 	a.Disabled = d
 	if duration == "87660h" {
-		log.Printf("Alert '%s' has been disabled", a.Id)
+		log.Printf("Alert Disabled: '%s'", a.Id)
 	} else {
-		log.Printf("Alert '%s' has been disabled, this will last %s", a.Id, d)
+		log.Printf("Alert Disabled: '%s' for %s", a.Id, d)
 	}
 }
 

@@ -73,7 +73,7 @@ func (s *Switch) setStatus(status string) {
 
 func (s *Switch) Enable(reason string) {
 	s.Disabled = 0
-	log.Printf("Switch '%s' has been enabled", s.Id)
+	log.Printf("Switch Enabled: '%s'", s.Id)
 }
 
 func (s *Switch) Disable(duration string, reason string) {
@@ -83,15 +83,15 @@ func (s *Switch) Disable(duration string, reason string) {
 	}
 	d, err := time.ParseDuration(duration)
 	if err != nil {
-		log.Printf("Invalid disable duration '%s'", duration)
+		log.Printf("Invalid switch disable duration '%s'", duration)
 		return
 	}
 	s.SetLastAction()
 	s.Disabled = d
 	if duration == "87660h" {
-		log.Printf("Switch '%s' has been disabled", s.Id)
+		log.Printf("Switch Disabled: '%s'", s.Id)
 	} else {
-		log.Printf("Switch '%s' has been disabled, this will last %s", s.Id, d)
+		log.Printf("Switch Disabled: '%s' for %s", s.Id, d)
 	}
 }
 
@@ -128,7 +128,7 @@ func (s *Switch) TurnOn(For string, Reason string) {
 	}
 	// check for disable parameter
 	if s.isDisabled() {
-		log.Printf("Cannot turn on '%s' as it is currently disabled (%s)", s.Id, Reason)
+		Debug("Cannot turn on '%s' as it is currently disabled (%s)", s.Id, Reason)
 		return
 	}
 
@@ -139,11 +139,11 @@ func (s *Switch) TurnOn(For string, Reason string) {
 	s.setStatus("on")
 	if For != "" {
 		onFor, _ := time.ParseDuration(For)
-		log.Printf("%s (Turning on '%s' for %v)", Reason, s.Id, For)
+		log.Printf("Switch On: '%s' for %v (%s)", s.Id, For, Reason)
 		time.Sleep(onFor)
 		s.TurnOff(For + " has elapsed")
 	} else {
-		log.Printf("%s (Turning on '%s')", Reason, s.Id)
+		log.Printf("Switch On: '%s' (%s)", s.Id, Reason)
 	}
 }
 
@@ -156,5 +156,5 @@ func (s *Switch) TurnOff(reason string) {
 		SendRequest(s.Off)
 	}
 	s.setStatus("off")
-	log.Printf("%s (Turning off '%s')", reason, s.Id)
+	log.Printf("Switch Off: '%s' (%s)", s.Id, reason)
 }

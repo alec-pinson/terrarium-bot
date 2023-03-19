@@ -19,6 +19,7 @@ I currently run this in a Kubernetes cluster (3 Raspberry Pis using [K3S](https:
 - Will send a notification if a switch stops responding
 - Dry run mode using set `DRY_RUN=true` no switches will be turned on or off + no alert notifications will be sent
 - Debug mode for extra output - `DEBUG=true`
+- Health probe endpoints for Kubernetes `/health/live` and `/health/ready`
 
 ## Configuration
 

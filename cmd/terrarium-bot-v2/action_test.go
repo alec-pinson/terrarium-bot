@@ -40,11 +40,11 @@ func TestRunAction(t *testing.T) {
 	go RunAction("switch.test-action-switch.on.2s", "")
 	time.Sleep(1 * time.Second)
 	if s.getStatus() != "on" {
-		t.Errorf("RunAction('switch.test-action-switch.on') failed, got %v, want %v", s.getStatus(), "on")
+		t.Errorf("RunAction('switch.test-action-switch.on.2s') failed, got %v, want %v", s.getStatus(), "on")
 	}
-	time.Sleep(1 * time.Second)
+	time.Sleep(2 * time.Second)
 	if s.getStatus() != "off" {
-		t.Errorf("RunAction('switch.test-action-switch.on') failed, got %v, want %v", s.getStatus(), "off")
+		t.Errorf("RunAction('switch.test-action-switch.on.2s') failed, got %v, want %v", s.getStatus(), "off")
 	}
 	// Test case 3: switch turning off
 	s.TurnOn("", "")

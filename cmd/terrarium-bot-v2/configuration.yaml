@@ -149,7 +149,7 @@ alert:
     sensor: temperature
     when:
       day:
-        below: 18
+        below: 22
         above: 32
       night:
         below: 17

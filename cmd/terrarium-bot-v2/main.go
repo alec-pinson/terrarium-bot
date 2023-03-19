@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 )
 
 var (
@@ -37,7 +36,6 @@ func main() {
 	}
 
 	InitSensors()
-	time.Sleep(5 * time.Second) // give abit of time for any sensors to collect data
 	InitSwitches()
 	InitTime()
 	InitAlerting()

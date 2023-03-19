@@ -18,6 +18,16 @@ func GetNotification(id string) *Notification {
 	return &Notification{}
 }
 
+func InitNotifications() {
+	// send a startup notification (useful if it keeps crashing without you knowing)
+	for _, n := range config.Notification {
+		log.Println("Started: Terrarium bot")
+		n.SendNotification("Terrarium bot started")
+		// we don't want to block alerts because of this
+		n.LastNotification = time.Now().Add(-24 * time.Hour)
+	}
+}
+
 func (n *Notification) setLastNotification() {
 	n.LastNotification = time.Now()
 }

@@ -43,12 +43,7 @@ func main() {
 	InitAlerting()
 	apiServer.Start()
 	InitTriggers()
-
-	// send a startup notification (useful if it keeps crashing without you knowing)
-	for _, n := range config.Notification {
-		log.Println("Started: Terrarium bot")
-		n.SendNotification("Terrarium bot started")
-	}
+	InitNotifications()
 
 	// don't die
 	select {}

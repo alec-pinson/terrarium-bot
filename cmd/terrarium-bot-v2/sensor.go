@@ -23,6 +23,7 @@ func InitSensors() {
 	for _, s := range config.Sensor {
 		go s.monitor()
 	}
+	time.Sleep(5 * time.Second) // give abit of time for any sensors to collect data
 }
 
 func (s *Sensor) SetValue(value int) {

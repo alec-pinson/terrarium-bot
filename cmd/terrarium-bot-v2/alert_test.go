@@ -59,7 +59,7 @@ func TestIsFailing(t *testing.T) {
 
 func TestSendAlertNotification(t *testing.T) {
 	// do not send a real notification
-	config.Debug = true
+	config.DryRun = true
 	config.Notification = []*Notification{
 		{
 			Id:     "pushover",
@@ -71,11 +71,11 @@ func TestSendAlertNotification(t *testing.T) {
 	var buf bytes.Buffer
 	log.SetOutput(&buf)
 	a.sendNotification("Test notification")
-	if !strings.Contains(buf.String(), "Sent alert:") {
-		t.Errorf("Log should contain 'Sent alert:' but doesn't, log: %q", buf.String())
+	if !strings.Contains(buf.String(), "Alert:") {
+		t.Errorf("Log should contain 'Alert:' but doesn't, log: %q", buf.String())
 	}
 
 	// reset
-	config.Debug = false
+	config.DryRun = false
 	log.SetOutput(os.Stderr)
 }

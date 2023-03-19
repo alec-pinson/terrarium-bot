@@ -96,8 +96,6 @@ type When struct {
 }
 
 func (config Config) Load() Config {
-	log.Println("Loading configuration...")
-
 	// debug
 	if strings.ToLower(os.Getenv("DEBUG")) == "true" {
 		config.Debug = true
@@ -117,6 +115,8 @@ func (config Config) Load() Config {
 	if config.File == "" {
 		config.File = "configuration.yaml"
 	}
+
+	log.Printf("Loading configuration from '%s'...", config.File)
 
 	// load yaml from file
 	yamlFile, err := ioutil.ReadFile(config.File)

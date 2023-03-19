@@ -18,6 +18,16 @@ func GetNotification(id string) *Notification {
 	return &Notification{}
 }
 
+func InitNotifications() {
+	// send a startup notification (useful if it keeps crashing without you knowing)
+	for _, n := range config.Notification {
+		log.Println("Started: Terrarium bot")
+		n.SendNotification("Terrarium bot started")
+		// we don't want to block alerts because of this
+		n.LastNotification = time.Now().Add(-24 * time.Hour)
+	}
+}
+
 func (n *Notification) setLastNotification() {
 	n.LastNotification = time.Now()
 }
@@ -29,7 +39,7 @@ func (n *Notification) SendNotification(s string, v ...any) {
 		// make sure we're not spamming
 		if n.do(alertMessage) {
 			n.setLastNotification()
-			log.Println("Sent alert: " + alertMessage)
+			log.Println("Alert: " + alertMessage)
 		}
 	} else {
 		Debug("Alert not sent: %s (anti-spam @ %s)", alertMessage, n.AntiSpam)
@@ -48,7 +58,7 @@ func (n *Notification) do(alertMessage string) bool {
 }
 
 func PushoverNotification(n Notification, alertMessage string) {
-	if config.Debug || config.DryRun {
+	if config.DryRun {
 		return
 	}
 	app := pushover.New(n.APITokenValue)

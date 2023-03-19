@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 )
 
 var (
@@ -12,8 +11,15 @@ var (
 )
 
 func main() {
-	log.Println("Starting...")
+	log.Println("Starting: Terrarium bot")
 	config = config.Load()
+
+	if config.Debug {
+		log.Println("****************************************")
+		log.Println("****  Debug mode currently active!  ****")
+		log.Println("**** There will be extra log output ****")
+		log.Println("****************************************")
+	}
 
 	if config.DryRun {
 		log.Println("****************************************")
@@ -30,12 +36,12 @@ func main() {
 	}
 
 	InitSensors()
-	time.Sleep(5 * time.Second) // give abit of time for any sensors to collect data
 	InitSwitches()
 	InitTime()
 	InitAlerting()
 	apiServer.Start()
 	InitTriggers()
+	InitNotifications()
 
 	// don't die
 	select {}

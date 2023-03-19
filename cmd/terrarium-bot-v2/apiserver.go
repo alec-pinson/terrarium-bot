@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 type APIServer struct{}
@@ -12,6 +13,7 @@ func (apiServer APIServer) Start() {
 	log.Println("Starting API server...")
 	http.HandleFunc("/", apiServer.Endpoint)
 	go http.ListenAndServe(":8080", nil)
+	time.Sleep(1 * time.Second) // give some time for api server to start before moving on
 	log.Println("API Server started...")
 }
 

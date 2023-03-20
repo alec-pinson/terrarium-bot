@@ -21,46 +21,12 @@ func InitSwitches() {
 	for _, s := range config.Switch {
 		// some urls include env vars
 		s.fixURLs()
-		// if s.Every != 0 {
-		// 	// some switches are configured to run every x minutes/hours
-		// 	go s.monitor()
-		// }
 	}
 }
-
-// func (s *Switch) monitor() {
-// 	log.Printf("Switch '%s' has been set to turn on every %s for %s (not during the night)", s.Id, s.Every, s.For)
-// 	if s.Disable != 0 {
-// 		log.Printf("Switch '%s' will not run more than once every %s", s.Id, s.Disable)
-// 	}
-// 	if !isTesting {
-// 		// if testing, skip this
-// 		time.Sleep(s.Every)
-// 	}
-// 	for {
-// 		if isDayTime() { // maybe add something here so it doesn't mist straight after sunrise
-// 			lastAction := s.GetLastAction()
-// 			// has this action been ran in the past x minutes/hours
-// 			if lastAction.Before(time.Now().Add(-s.Every)) {
-// 				// nope
-// 				s.TurnOn("Scheduled every " + s.Every.String())
-// 				time.Sleep(s.Every)
-// 			}
-// 		}
-// 		if isTesting {
-// 			return
-// 		}
-// 		time.Sleep(30 * time.Second)
-// 	}
-// }
 
 func (s *Switch) SetLastAction() {
 	s.LastAction = time.Now()
 	s.Disabled = 0
-}
-
-func (s *Switch) GetLastAction() time.Time {
-	return s.LastAction
 }
 
 func (s *Switch) getStatus() string {
@@ -86,7 +52,7 @@ func (s *Switch) Disable(duration string, reason string) {
 		log.Printf("Invalid switch disable duration '%s'", duration)
 		return
 	}
-	s.SetLastAction()
+	s.DisabledAt = time.Now()
 	s.Disabled = d
 	if duration == "87660h" {
 		log.Printf("Switch Disabled: '%s'", s.Id)
@@ -99,26 +65,17 @@ func (s *Switch) isDisabled() bool {
 	if s.Disabled == 0 {
 		return false
 	}
-	if s.LastAction.Add(s.Disabled).After(time.Now()) {
+	if s.DisabledAt.Add(s.Disabled).After(time.Now()) {
 		return true
 	}
 	return false
 }
-
-func (s *Switch) setOnUrl(url string) {
-	s.On = url
-}
-
-func (s *Switch) setOffUrl(url string) {
-	s.Off = url
-}
-
 func (s *Switch) fixURLs() {
 	if strings.Contains(s.On, "$") {
-		s.setOnUrl(os.ExpandEnv(s.On))
+		s.On = (os.ExpandEnv(s.On))
 	}
 	if strings.Contains(s.Off, "$") {
-		s.setOffUrl(os.ExpandEnv(s.Off))
+		s.Off = os.ExpandEnv(s.Off)
 	}
 }
 

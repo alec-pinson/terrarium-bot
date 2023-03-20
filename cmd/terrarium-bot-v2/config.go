@@ -40,6 +40,7 @@ type Trigger struct {
 	Action        []string `yaml:"action"`
 	Else          []string `yaml:"else"`
 	Disabled      time.Duration
+	DisabledAt    time.Time
 	LastTriggered time.Time
 }
 
@@ -47,8 +48,9 @@ type Switch struct {
 	Id         string `yaml:"id"`
 	On         string `yaml:"on"`
 	Off        string `yaml:"off"`
-	Disabled   time.Duration
 	Status     string // on/off
+	Disabled   time.Duration
+	DisabledAt time.Time
 	LastAction time.Time
 }
 
@@ -79,7 +81,7 @@ type Alert struct {
 	Notification []string      `yaml:"notification"`
 	FailedTime   time.Time
 	Disabled     time.Duration
-	LastAlerted  time.Time
+	DisabledAt   time.Time
 }
 
 type When struct {

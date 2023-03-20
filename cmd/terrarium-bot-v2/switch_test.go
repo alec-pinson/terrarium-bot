@@ -22,110 +22,6 @@ func TestGetSwitch(t *testing.T) {
 	}
 }
 
-// // Switch monitor function tests
-// func TestSwitchMonitor(t *testing.T) {
-// 	// disable http calls when turning on/off switches
-// 	config.DryRun = true
-// 	// set testing mode so we exit the for loop
-// 	isTesting = true
-
-// 	s := &Switch{
-// 		Id:            "test-monitor-switch",
-// 		Every:         1 * time.Second,
-// 		For:           0,
-// 		Disable:       0,
-// 		On:            "http://test.com/on",
-// 		Off:           "http://test.com/off",
-// 		DisableCustom: 0,
-// 	}
-
-// 	// Test case 1: Light should automatically turn on every 1 second during day time
-// 	// ensure switch is off
-// 	s.TurnOff("")
-
-// 	// set last action to some time ago
-// 	s.LastAction = time.Now().Add(-(5 * time.Minute))
-
-// 	// ensure it is day time
-// 	config.Day.StartTime, _ = time.Parse("15:04", "00:00")
-// 	config.Night.StartTime, _ = time.Parse("15:04", "23:59")
-
-// 	// begin monitor
-// 	s.monitor()
-
-// 	// check that the switch turns on
-// 	if s.getStatus() != "on" {
-// 		t.Errorf("Switch did not turn on as expected")
-// 	}
-
-// 	// Test case 2: Make sure switch cannot turn on during the night
-// 	// ensure switch is off
-// 	s.TurnOff("")
-
-// 	// set last action to some time ago
-// 	s.LastAction = time.Now().Add(-(5 * time.Minute))
-
-// 	// ensure it is night time
-// 	config.Day.StartTime, _ = time.Parse("15:04", "23:59")
-// 	config.Night.StartTime, _ = time.Parse("15:04", "00:00")
-
-// 	s.monitor()
-
-// 	if s.getStatus() == "on" {
-// 		t.Errorf("Switch should not turn on during the night")
-// 	}
-
-// 	// reset back to day time
-// 	config.Day.StartTime, _ = time.Parse("15:04", "00:00")
-// 	config.Night.StartTime, _ = time.Parse("15:04", "23:59")
-
-// 	// Test case 3: Make sure switch does not turn on during the disabled duration
-// 	// ensure switch is off
-// 	s.TurnOff("")
-// 	// set last action to 1 second ago
-// 	s.LastAction = time.Now().Add(-(1 * time.Second))
-// 	// Set disable duration to 20 seconds
-// 	s.Disable = 2 * time.Second
-// 	s.monitor()
-
-// 	if s.getStatus() == "on" {
-// 		t.Errorf("Switch turned on while disabled")
-// 	}
-
-// 	// Test case 4: Switch should turn on after disable duration passes
-// 	time.Sleep(3 * time.Second)
-// 	s.monitor()
-
-// 	if s.getStatus() != "on" {
-// 		t.Errorf("Switch should turn on again after disable duration passes")
-// 	}
-
-// 	// Test case 5: Make sure switch does not turn on during the custom disabled duration
-// 	// ensure switch is off
-// 	s.TurnOff("")
-// 	// set last action to 1 second ago
-// 	s.LastAction = time.Now().Add(-(1 * time.Second))
-// 	// Set custom disable duration to 2 seconds
-// 	s.SetDisableCustom("2s", "")
-// 	s.monitor()
-
-// 	if s.getStatus() == "on" {
-// 		t.Errorf("Switch turned on while custom disable duration was set")
-// 	}
-
-// 	// Test case 6: Switch should turn on after custom disable duration passes
-// 	time.Sleep(3 * time.Second)
-// 	s.monitor()
-
-// 	if s.getStatus() != "on" {
-// 		t.Errorf("Switch should turn on again after custom disable duration passes")
-// 	}
-
-// 	// reset
-// 	config.DryRun = false
-// 	isTesting = false
-// }
-
 // Switch set last action function tests
 func TestSwitchSetLastAction(t *testing.T) {
 	s := &Switch{}
@@ -134,19 +30,6 @@ func TestSwitchSetLastAction(t *testing.T) {
 	s.SetLastAction()
 	if s.LastAction.IsZero() {
 		t.Errorf("Last action was not set")
-	}
-}
-
-// Switch get last action function tests
-func TestSwitchGetLastAction(t *testing.T) {
-	s := &Switch{
-		LastAction: time.Now(),
-	}
-
-	// Get last action and ensure that it's returned correctly
-	lastAction := s.GetLastAction()
-	if lastAction != s.LastAction {
-		t.Errorf("GetLastAction did not return the correct last action")
 	}
 }
 
@@ -201,7 +84,7 @@ func TestSwitchIsDisabled(t *testing.T) {
 }
 
 // Switch set on URL and set off URL function tests
-func TestSwitchSetOnOffUrl(t *testing.T) {
+func TestFixURLs(t *testing.T) {
 	// set env variable
 	os.Setenv("FIX_URL_VAL", "testing")
 
@@ -217,18 +100,6 @@ func TestSwitchSetOnOffUrl(t *testing.T) {
 	}
 	if s.Off != "http://test.com/testing/off" {
 		t.Errorf("Expected environment variables were not replaced for Off URL")
-	}
-
-	// Set on URL and ensure that it's set correctly
-	s.setOnUrl("http://test.com/on")
-	if s.On != "http://test.com/on" {
-		t.Errorf("On URL was not set correctly")
-	}
-
-	// Set off URL and ensure that it's set correctly
-	s.setOffUrl("http://test.com/off")
-	if s.Off != "http://test.com/off" {
-		t.Errorf("Off URL was not set correctly")
 	}
 
 	// reset

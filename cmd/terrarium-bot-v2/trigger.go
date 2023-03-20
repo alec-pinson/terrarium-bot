@@ -160,7 +160,7 @@ func (t *Trigger) Disable(duration string, reason string) {
 		log.Printf("Invalid disable duration '%s'", duration)
 		return
 	}
-	t.LastTriggered = time.Now()
+	t.DisabledAt = time.Now()
 	t.Disabled = d
 	if duration == "87660h" {
 		log.Printf("Trigger Disabled: '%s'", t.Id)
@@ -173,7 +173,7 @@ func (t *Trigger) isDisabled() bool {
 	if t.Disabled == 0 {
 		return false
 	}
-	if t.LastTriggered.Add(t.Disabled).After(time.Now()) {
+	if t.DisabledAt.Add(t.Disabled).After(time.Now()) {
 		return true
 	}
 	return false

@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestGetNotification(t *testing.T) {
@@ -34,19 +35,36 @@ func TestSendNotification(t *testing.T) {
 	// do not send a real notification
 	config.DryRun = true
 
-	config.Notification = []*Notification{
-		{
-			Id:     "pushover",
-			Device: "Some-device",
-		},
+	// configure notification
+	n := Notification{
+		Id:       "pushover",
+		Device:   "some-device",
+		AntiSpam: 1 * time.Second,
 	}
 
-	a := &Alert{Notification: []string{"pushover"}}
+	// catch log output
 	var buf bytes.Buffer
 	log.SetOutput(&buf)
-	a.sendNotification("Test notification")
+
+	// Test case 1: Send notification
+	n.SendNotification("Test notification")
 	if !strings.Contains(buf.String(), "Alert:") {
-		t.Errorf("Log should contain 'Alert:' but doesn't, log: %q", buf.String())
+		t.Errorf("Alert should have sent, log: %q", buf.String())
+	}
+
+	// Test case 2: Test anti-spam prevents sending again
+	buf.Reset()
+	n.SendNotification("Test notification")
+	if strings.Contains(buf.String(), "Alert:") {
+		t.Errorf("Notification should not have sent again due to anti-spam, log: %q", buf.String())
+	}
+
+	// Test case 3: Test anti-spam has ended
+	buf.Reset()
+	time.Sleep(3 * time.Second)
+	n.SendNotification("Test notification")
+	if !strings.Contains(buf.String(), "Alert:") {
+		t.Errorf("Notification should have sent now anti-spam time has expired, log: %q", buf.String())
 	}
 
 	// reset

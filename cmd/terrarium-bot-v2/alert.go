@@ -27,8 +27,8 @@ func InitAlerting() {
 
 func (a *Alert) monitor() {
 	// maybe add a sleep here for startup, dont want alerts straight away
+	s := GetSensor(a.Sensor)
 	for {
-		s := GetSensor(a.Sensor)
 		value := s.GetValue()
 		if !isSunset() && !isSunrise() && value != 0 {
 			// don't alert between sunset/sunrise or if value is 0
@@ -112,7 +112,7 @@ func (a *Alert) Disable(duration string, reason string) {
 		log.Printf("Invalid alert disable duration '%s'", duration)
 		return
 	}
-	a.LastAlerted = time.Now()
+	a.DisabledAt = time.Now()
 	a.Disabled = d
 	if duration == "87660h" {
 		log.Printf("Alert Disabled: '%s'", a.Id)
@@ -125,7 +125,7 @@ func (a *Alert) isDisabled() bool {
 	if a.Disabled == 0 {
 		return false
 	}
-	if a.LastAlerted.Add(a.Disabled).After(time.Now()) {
+	if a.DisabledAt.Add(a.Disabled).After(time.Now()) {
 		return true
 	}
 	return false

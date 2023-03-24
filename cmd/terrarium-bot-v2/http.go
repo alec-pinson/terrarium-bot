@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -8,10 +9,15 @@ import (
 	"net/http/httputil"
 )
 
-func SendRequest(url string) (map[string]interface{}, error) {
+func SendRequest(url string, insecureSkipVerify bool) (map[string]interface{}, error) {
 	result := map[string]interface{}{}
 
-	resp, err := http.Get(url)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: insecureSkipVerify},
+	}
+	client := &http.Client{Transport: tr}
+
+	resp, err := client.Get(url)
 	if err != nil {
 		log.Println(err)
 		return nil, err

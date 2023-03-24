@@ -91,7 +91,7 @@ func (s *Switch) TurnOn(For string, Reason string) {
 
 	s.SetLastAction()
 	if !config.DryRun {
-		_, err := SendRequest(s.On)
+		_, err := SendRequest(s.On, s.Insecure)
 		if err != nil {
 			log.Printf("Switch Offline: %s", s.Id)
 			for _, n := range config.Notification {
@@ -116,7 +116,7 @@ func (s *Switch) TurnOff(reason string) {
 	}
 	s.SetLastAction()
 	if !config.DryRun {
-		_, err := SendRequest(s.Off)
+		_, err := SendRequest(s.Off, s.Insecure)
 		if err != nil {
 			log.Printf("Switch Offline: %s", s.Id)
 			for _, n := range config.Notification {

@@ -35,7 +35,7 @@ func (s *Sensor) GetValue() int {
 }
 
 func (s *Sensor) getSensorValue() int {
-	r, err := SendRequest(s.Url)
+	r, err := SendRequest(s.Url, s.Insecure)
 	if err != nil {
 		log.Println(err)
 	}

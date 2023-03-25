@@ -9,11 +9,11 @@ import (
 	"net/http/httputil"
 )
 
-func SendRequest(url string, insecureSkipVerify bool) (map[string]interface{}, error) {
+func SendRequest(url string, insecure bool) (map[string]interface{}, error) {
 	result := map[string]interface{}{}
 
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: insecureSkipVerify},
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
 	}
 	client := &http.Client{Transport: tr}
 
@@ -35,12 +35,8 @@ func SendRequest(url string, insecureSkipVerify bool) (map[string]interface{}, e
 		fmt.Printf("Response\n: %v\n\n", string(responseDump))
 	}
 
-	// decode and return response
+	// attempt decode and return response
 	decoder := json.NewDecoder(resp.Body)
-	err = decoder.Decode(&result)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
+	decoder.Decode(&result)
 	return result, nil
 }

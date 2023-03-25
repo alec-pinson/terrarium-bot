@@ -65,10 +65,10 @@ func (s *Switch) isDisabled() bool {
 	if s.Disabled == 0 {
 		return false
 	}
-	if s.DisabledAt.Add(s.Disabled).After(time.Now()) {
-		return true
+	if s.DisabledAt.Add(s.Disabled).Before(time.Now()) {
+		return false
 	}
-	return false
+	return true
 }
 func (s *Switch) fixURLs() {
 	if strings.Contains(s.On, "$") {

@@ -50,6 +50,9 @@ func (t *Trigger) monitor() {
 
 		if t.isDisabled() {
 			Debug("Trigger %s is currently disabled", t.Id)
+			if isTesting {
+				return
+			}
 			time.Sleep(1 * time.Minute)
 			continue
 		}
@@ -173,8 +176,8 @@ func (t *Trigger) isDisabled() bool {
 	if t.Disabled == 0 {
 		return false
 	}
-	if t.DisabledAt.Add(t.Disabled).After(time.Now()) {
-		return true
+	if t.DisabledAt.Add(t.Disabled).Before(time.Now()) {
+		return false
 	}
-	return false
+	return true
 }

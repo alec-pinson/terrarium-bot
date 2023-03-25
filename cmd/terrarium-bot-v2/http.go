@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -8,13 +9,18 @@ import (
 	"net/http/httputil"
 )
 
-func SendRequest(url string) (map[string]interface{}, error) {
+func SendRequest(url string, insecure bool) (map[string]interface{}, int, error) {
 	result := map[string]interface{}{}
 
-	resp, err := http.Get(url)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
+	}
+	client := &http.Client{Transport: tr}
+
+	resp, err := client.Get(url)
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, 0, err
 	}
 	defer resp.Body.Close()
 
@@ -29,12 +35,8 @@ func SendRequest(url string) (map[string]interface{}, error) {
 		fmt.Printf("Response\n: %v\n\n", string(responseDump))
 	}
 
-	// decode and return response
+	// attempt decode and return response
 	decoder := json.NewDecoder(resp.Body)
-	err = decoder.Decode(&result)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	return result, nil
+	decoder.Decode(&result)
+	return result, resp.StatusCode, nil
 }

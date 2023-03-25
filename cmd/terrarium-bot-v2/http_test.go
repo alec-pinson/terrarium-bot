@@ -28,9 +28,12 @@ func TestSendRequest(t *testing.T) {
 		defer server.Close()
 
 		// Send request to mocked server URL
-		res, err := SendRequest(server.URL)
+		res, respCode, err := SendRequest(server.URL, false)
 		if err != nil {
 			t.Fatalf("Unexpected error: %v", err)
+		}
+		if respCode != 200 {
+			t.Fatalf("Expected response code 200, got %v", respCode)
 		}
 
 		// Assert response is as expected
@@ -40,9 +43,12 @@ func TestSendRequest(t *testing.T) {
 	})
 
 	t.Run("Invalid URL", func(t *testing.T) {
-		_, err := SendRequest("invalid_url")
+		_, respCode, err := SendRequest("invalid_url", false)
 		if err == nil {
 			t.Error("Expected error, but got nil")
+		}
+		if respCode != 0 {
+			t.Fatalf("Expected response code 0, got %v", respCode)
 		}
 	})
 }

@@ -65,10 +65,10 @@ func (s *Switch) isDisabled() bool {
 	if s.Disabled == 0 {
 		return false
 	}
-	if s.DisabledAt.Add(s.Disabled).After(time.Now()) {
-		return true
+	if s.DisabledAt.Add(s.Disabled).Before(time.Now()) {
+		return false
 	}
-	return false
+	return true
 }
 func (s *Switch) fixURLs() {
 	if strings.Contains(s.On, "$") {
@@ -91,8 +91,8 @@ func (s *Switch) TurnOn(For string, Reason string) {
 
 	s.SetLastAction()
 	if !config.DryRun {
-		_, err := SendRequest(s.On)
-		if err != nil {
+		_, respCode, err := SendRequest(s.On, s.Insecure)
+		if err != nil || respCode != 200 {
 			log.Printf("Switch Offline: %s", s.Id)
 			for _, n := range config.Notification {
 				n.SendNotification("Currently unable to turn on switch '%s'. Please check the logs.", s.Id)
@@ -116,8 +116,8 @@ func (s *Switch) TurnOff(reason string) {
 	}
 	s.SetLastAction()
 	if !config.DryRun {
-		_, err := SendRequest(s.Off)
-		if err != nil {
+		_, respCode, err := SendRequest(s.Off, s.Insecure)
+		if err != nil || respCode != 200 {
 			log.Printf("Switch Offline: %s", s.Id)
 			for _, n := range config.Notification {
 				n.SendNotification("Currently unable to turn off switch '%s'. Please check the logs.", s.Id)

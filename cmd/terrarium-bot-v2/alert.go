@@ -125,8 +125,8 @@ func (a *Alert) isDisabled() bool {
 	if a.Disabled == 0 {
 		return false
 	}
-	if a.DisabledAt.Add(a.Disabled).After(time.Now()) {
-		return true
+	if a.DisabledAt.Add(a.Disabled).Before(time.Now()) {
+		return false
 	}
-	return false
+	return true
 }

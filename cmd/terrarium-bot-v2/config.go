@@ -48,6 +48,7 @@ type Switch struct {
 	Id         string `yaml:"id"`
 	On         string `yaml:"on"`
 	Off        string `yaml:"off"`
+	Insecure   bool   `yaml:"insecure"`
 	Status     string // on/off
 	Disabled   time.Duration
 	DisabledAt time.Time
@@ -57,6 +58,7 @@ type Switch struct {
 type Sensor struct {
 	Id       string `yaml:"id"`
 	Url      string `yaml:"url"`
+	Insecure bool   `yaml:"insecure"`
 	JsonPath string `yaml:"jsonPath"`
 	Unit     string `yaml:"unit"`
 	Value    int

@@ -30,6 +30,7 @@ sunset:
   start: "20:55"
   action:
     - switch.big_led.off
+    - alert.temperature.disable.1h # disable temperature alert for 1 hour (allow to settle from day to night temps)
 
 trigger:
   - id: heating
@@ -115,12 +116,15 @@ switch:
   - id: camera-night-vision-1
     on: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=toggle-rtsp-nightvision-on
     off: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=toggle-rtsp-nightvision-off
+    insecure: true # ignore ssl certificate
   - id: camera-night-vision-2
     on: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=ir_led_on
     off: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=ir_led_off
+    insecure: true # ignore ssl certificate
   - id: camera-night-vision-3
     on: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=ir_cut_off
     off: https://root:${CAMERA_PASSWORD}@dafang/cgi-bin/action.cgi?cmd=ir_cut_on
+    insecure: true # ignore ssl certificate
 
 sensor:
   # - id: temperature

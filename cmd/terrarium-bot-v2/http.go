@@ -9,7 +9,7 @@ import (
 	"net/http/httputil"
 )
 
-func SendRequest(url string, insecure bool) (map[string]interface{}, error) {
+func SendRequest(url string, insecure bool) (map[string]interface{}, int, error) {
 	result := map[string]interface{}{}
 
 	tr := &http.Transport{
@@ -20,7 +20,7 @@ func SendRequest(url string, insecure bool) (map[string]interface{}, error) {
 	resp, err := client.Get(url)
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, 0, err
 	}
 	defer resp.Body.Close()
 
@@ -38,5 +38,5 @@ func SendRequest(url string, insecure bool) (map[string]interface{}, error) {
 	// attempt decode and return response
 	decoder := json.NewDecoder(resp.Body)
 	decoder.Decode(&result)
-	return result, nil
+	return result, resp.StatusCode, nil
 }

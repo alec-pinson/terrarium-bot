@@ -35,13 +35,19 @@ func (s *Sensor) GetValue() int {
 }
 
 func (s *Sensor) getSensorValue() int {
-	r, err := SendRequest(s.Url, s.Insecure)
+	r, respCode, err := SendRequest(s.Url, s.Insecure)
 	if err != nil {
 		log.Println(err)
+		return 0
+	}
+	if respCode != 200 {
+		log.Printf("Unable to get sensor value, response code: %v", respCode)
+		return 0
 	}
 	b, err := json.MarshalIndent(r, "", "  ")
 	if err != nil {
 		log.Println(err)
+		return 0
 	}
 	value := getJsonValue(string(b), s.JsonPath)
 	intValue, err := strconv.Atoi(fmt.Sprintf("%.0f", value))

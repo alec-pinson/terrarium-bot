@@ -73,6 +73,7 @@ notification:
   - id: "notification1"
     antiSpam: "30s"
     device: "my_device"
+    sound: "some_sound"
     userToken: "NOTIFICATION_USER_TOKEN"
     apiToken: "NOTIFICATION_API_TOKEN"
 alert:
@@ -149,6 +150,7 @@ useInMemoryStatus: true`
 	assert.Equal(t, "notification1", loadedConfig.Notification[0].Id)
 	assert.Equal(t, 30*time.Second, loadedConfig.Notification[0].AntiSpam)
 	assert.Equal(t, "my_device", loadedConfig.Notification[0].Device)
+	assert.Equal(t, "some_sound", loadedConfig.Notification[0].Sound)
 	assert.Equal(t, "NOTIFICATION_USER_TOKEN", loadedConfig.Notification[0].UserToken)
 	assert.Equal(t, "NOTIFICATION_API_TOKEN", loadedConfig.Notification[0].APIToken)
 	assert.Equal(t, "user123", loadedConfig.Notification[0].UserTokenValue)

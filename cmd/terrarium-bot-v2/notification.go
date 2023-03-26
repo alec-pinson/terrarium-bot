@@ -67,6 +67,7 @@ func PushoverNotification(n Notification, alertMessage string) {
 	message := &pushover.Message{
 		Message:    alertMessage,
 		DeviceName: n.Device,
+		Sound:      n.Sound,
 	}
 
 	response, err := app.SendMessage(message, recipient)

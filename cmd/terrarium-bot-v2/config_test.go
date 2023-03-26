@@ -73,7 +73,7 @@ notification:
   - id: "notification1"
     antiSpam: "30s"
     device: "my_device"
-		sound: "some_sound"
+    sound: "some_sound"
     userToken: "NOTIFICATION_USER_TOKEN"
     apiToken: "NOTIFICATION_API_TOKEN"
 alert:

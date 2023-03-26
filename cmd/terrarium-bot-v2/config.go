@@ -68,6 +68,7 @@ type Notification struct {
 	Id               string        `yaml:"id"`
 	AntiSpam         time.Duration `yaml:"antiSpam"`
 	Device           string        `yaml:"device"`
+	Sound            string        `yaml:"sound"`
 	UserToken        string        `yaml:"userToken"`
 	APIToken         string        `yaml:"apiToken"`
 	UserTokenValue   string

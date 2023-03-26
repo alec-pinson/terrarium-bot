@@ -145,6 +145,7 @@ sensor:
 notification:
   - id: pushover
     device: Alec-Phone
+    sound: tugboat
     userToken: PUSHOVER_USER_TOKEN # env variable name
     apiToken: PUSHOVER_APP_TOKEN # env variable name
     antiSpam: 1h # only receive alerts once an hour

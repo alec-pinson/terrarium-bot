@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -30,11 +32,39 @@ func (s *Switch) SetLastAction() {
 }
 
 func (s *Switch) getStatus() string {
-	return s.Status
+	if s.StatusUrl == "" {
+		return s.State
+	}
+
+	r, respCode, err := SendRequest(s.StatusUrl, s.Insecure)
+	if err != nil || respCode != 200 {
+		log.Printf("Switch Offline: %s", s.Id)
+		for _, n := range config.Notification {
+			n.SendNotification("Currently unable to get status for switch '%s'. Please check the logs.", s.Id)
+		}
+	} else {
+		// use resp to get status
+		b, err := json.MarshalIndent(r, "", "  ")
+		if err != nil {
+			log.Println(err)
+			return s.State
+		}
+		state := strings.ToLower(fmt.Sprintf("%s", getJsonValue(string(b), s.JsonPath)))
+		if state == "on" || state == "off" {
+			s.State = state
+		} else {
+			log.Printf("Unknown status '%s' received for switch '%s'", state, s.Id)
+			return s.State
+		}
+	}
+
+	return s.State
 }
 
-func (s *Switch) setStatus(status string) {
-	s.Status = status
+func (s *Switch) setStatus(state string) {
+	if s.StatusUrl == "" {
+		s.State = state
+	}
 }
 
 func (s *Switch) Enable(reason string) {
@@ -80,7 +110,7 @@ func (s *Switch) fixURLs() {
 }
 
 func (s *Switch) TurnOn(For string, Reason string) {
-	if config.UseInMemoryStatus && s.getStatus() == "on" {
+	if s.getStatus() == "on" {
 		return
 	}
 	// check for disable parameter
@@ -111,7 +141,7 @@ func (s *Switch) TurnOn(For string, Reason string) {
 }
 
 func (s *Switch) TurnOff(reason string) {
-	if config.UseInMemoryStatus && s.getStatus() == "off" {
+	if s.getStatus() == "off" {
 		return
 	}
 	s.SetLastAction()

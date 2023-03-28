@@ -15,7 +15,6 @@ func TestLoadConfig(t *testing.T) {
 	os.Setenv("CONFIG_FILE", "test.yaml")
 	os.Setenv("NOTIFICATION_USER_TOKEN", "user123")
 	os.Setenv("NOTIFICATION_API_TOKEN", "api123")
-	os.Setenv("USE_IN_MEMORY_STATUS", "true")
 
 	// create the test yaml file
 	configFileYaml := `
@@ -55,6 +54,8 @@ switch:
   - id: "switch1"
     on: "http://localhost:8081/on"
     off: "http://localhost:8081/off"
+    status: "http://localhost:8081/status"
+    jsonPath: "me.status"
     insecure: true
   - id: "switch2"
     on: "http://localhost:8081/on"
@@ -86,7 +87,7 @@ alert:
         below: 5
     after: "20m"
     notification: ["notification1"]
-useInMemoryStatus: true`
+`
 	err := os.WriteFile("test.yaml", []byte(configFileYaml), 0644)
 	if err != nil {
 		t.Errorf("Error creating test.yaml: %v", err)
@@ -137,6 +138,8 @@ useInMemoryStatus: true`
 	assert.Equal(t, "switch1", loadedConfig.Switch[0].Id)
 	assert.Equal(t, "http://localhost:8081/on", loadedConfig.Switch[0].On)
 	assert.Equal(t, "http://localhost:8081/off", loadedConfig.Switch[0].Off)
+	assert.Equal(t, "http://localhost:8081/status", loadedConfig.Switch[0].StatusUrl)
+	assert.Equal(t, "me.status", loadedConfig.Switch[0].JsonPath)
 	assert.True(t, loadedConfig.Switch[0].Insecure)
 
 	assert.Len(t, loadedConfig.Sensor, 2)
@@ -163,8 +166,6 @@ useInMemoryStatus: true`
 	assert.Equal(t, 5, loadedConfig.Alert[0].When.Night.Below)
 	assert.Equal(t, 20*time.Minute, loadedConfig.Alert[0].After)
 	assert.Equal(t, []string{"notification1"}, loadedConfig.Alert[0].Notification)
-
-	assert.True(t, loadedConfig.UseInMemoryStatus)
 
 	// clean up
 	os.Remove("test.yaml")

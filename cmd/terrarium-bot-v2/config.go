@@ -11,19 +11,18 @@ import (
 )
 
 type Config struct {
-	Debug             bool
-	DryRun            bool
-	File              string
-	Day               StartAction     `yaml:"day"`
-	Night             StartAction     `yaml:"night"`
-	Sunrise           StartAction     `yaml:"sunrise"`
-	Sunset            StartAction     `yaml:"sunset"`
-	Trigger           []*Trigger      `yaml:"trigger"`
-	Switch            []*Switch       `yaml:"switch"`
-	Sensor            []*Sensor       `yaml:"sensor"`
-	Notification      []*Notification `yaml:"notification"`
-	Alert             []*Alert        `yaml:"alert"`
-	UseInMemoryStatus bool
+	Debug        bool
+	DryRun       bool
+	File         string
+	Day          StartAction     `yaml:"day"`
+	Night        StartAction     `yaml:"night"`
+	Sunrise      StartAction     `yaml:"sunrise"`
+	Sunset       StartAction     `yaml:"sunset"`
+	Trigger      []*Trigger      `yaml:"trigger"`
+	Switch       []*Switch       `yaml:"switch"`
+	Sensor       []*Sensor       `yaml:"sensor"`
+	Notification []*Notification `yaml:"notification"`
+	Alert        []*Alert        `yaml:"alert"`
 }
 
 type StartAction struct {
@@ -48,8 +47,10 @@ type Switch struct {
 	Id         string `yaml:"id"`
 	On         string `yaml:"on"`
 	Off        string `yaml:"off"`
+	StatusUrl  string `yaml:"status"`
+	JsonPath   string `yaml:"jsonPath"`
 	Insecure   bool   `yaml:"insecure"`
-	Status     string // on/off
+	State      string // on/off
 	Disabled   time.Duration
 	DisabledAt time.Time
 	LastAction time.Time
@@ -144,13 +145,6 @@ func (config Config) Load() Config {
 	config.Night.StartTime, _ = time.Parse("15:04", config.Night.Start)
 	config.Sunrise.StartTime, _ = time.Parse("15:04", config.Sunrise.Start)
 	config.Sunset.StartTime, _ = time.Parse("15:04", config.Sunset.Start)
-
-	// special parameter
-	if strings.ToLower(os.Getenv("USE_IN_MEMORY_STATUS")) == "true" {
-		config.UseInMemoryStatus = true
-	} else {
-		config.UseInMemoryStatus = false
-	}
 
 	log.Println("Configuration loaded...")
 

@@ -2,7 +2,10 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
@@ -35,18 +38,46 @@ func TestSwitchSetLastAction(t *testing.T) {
 
 // Switch get status and set status function tests
 func TestSwitchGetSetStatus(t *testing.T) {
-	s := &Switch{}
+	s1 := &Switch{
+		Id:  "test-switch-1",
+		On:  "switch1.com/on",
+		Off: "switch1.com/off",
+	}
 
 	// Set status to on and ensure that it's set correctly
-	s.setStatus("on")
-	if s.Status != "on" {
+	s1.setStatus("on")
+	if s1.State != "on" {
 		t.Errorf("Status was not set correctly")
 	}
 
 	// Get status and ensure that it's returned correctly
-	status := s.getStatus()
-	if status != s.Status {
+	state := s1.getStatus()
+	if state != s1.State {
 		t.Errorf("getStatus did not return the correct status")
+	}
+
+	// configure mock http response
+	mockResponse := `{"name": "test-switch-2", "status": "on"}`
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, mockResponse)
+	})
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	// Setup a switch status response
+	s2 := &Switch{
+		Id:        "test-switch-2",
+		On:        "switch2.com/on",
+		Off:       "switch2.com/off",
+		StatusUrl: server.URL,
+		JsonPath:  "status",
+	}
+	state = s2.getStatus()
+	if state != "on" {
+		t.Errorf("getStatus did not return the correct status: got %v, want %v", state, "on")
 	}
 }
 
@@ -125,25 +156,16 @@ func TestSwitchTurnOn(t *testing.T) {
 		t.Errorf("Switch did not turn on as expected")
 	}
 
-	// Test case 2: Switch doesn't turn on again when already on with UseInMemoryStatus enabled
+	// Test case 2: Switch doesn't turn on again when already on
 	var buf bytes.Buffer
 	log.SetOutput(&buf)
-	config.UseInMemoryStatus = true
 	s.TurnOn("", "")
 
-	if strings.Contains(buf.String(), "Switch On 'on-test'") {
-		t.Errorf("Switch turned on again while 'USE_IN_MEMORY_STATUS' was set")
+	if strings.Contains(buf.String(), "Switch On: 'on-test'") {
+		t.Errorf("Switch turned on again while already on")
 	}
 
-	// Test case 3: Switch turns on when already on with UseInMemoryStatus disabled
-	config.UseInMemoryStatus = false
-	buf.Reset()
-	s.TurnOn("", "")
-	if !strings.Contains(buf.String(), "Switch On: 'on-test'") {
-		t.Errorf("Switch did not turn on again while 'USE_IN_MEMORY_STATUS' was unset, got %v", buf.String())
-	}
-
-	// Test case 4: Switch turns off after 'for' duration
+	// Test case 3: Switch turns off after 'for' duration
 	s.TurnOff("")         // ensure switch is off
 	go s.TurnOn("2s", "") // turn on for 2 seconds
 	time.Sleep(1 * time.Second)
@@ -155,7 +177,7 @@ func TestSwitchTurnOn(t *testing.T) {
 		t.Errorf("Switch did not turn off after 2 seconds as expected")
 	}
 
-	// Test case 5: Switch does not turn on if recently turned off and Disable is specified
+	// Test case 4: Switch does not turn on if recently turned off and Disable is specified
 	s.TurnOff("")
 	s.Disable("10m", "")
 	s.TurnOn("", "")

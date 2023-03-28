@@ -113,6 +113,3 @@ Call an action from a URL endpoint, I use my gpio-to-api app to monitor a gpio b
 
 ## The End
 Hopefully the configuration should be pretty self explanitory, if you get stuck or there are any features you think might be missing then feel free to create an issue :slightly_smiling_face:.
-
-## Known Issues
-- My crappy sonoff devices don't support getting on/off status over LAN (might replace them at some point) so rather than checking if something is already on/off, I just set on/off anyway. E.g. A switch might be on and I turn it 'on' again. I have added a quick workaround which you can enable if you want `USE_IN_MEMORY_STATUS=true` which will store the status in memory after it has been changed. However, if you turn on or off a switch outside the application, it will not know you have done so.

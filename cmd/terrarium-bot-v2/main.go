@@ -28,13 +28,6 @@ func main() {
 		log.Println("****************************************")
 	}
 
-	if config.UseInMemoryStatus {
-		log.Println("*****************************************************")
-		log.Println("****      'USE_IN_MEMORY_STATUS' is active       ****")
-		log.Println("**** Please do not switch any switches manually  ****")
-		log.Println("*****************************************************")
-	}
-
 	InitSensors()
 	InitSwitches()
 	InitTime()

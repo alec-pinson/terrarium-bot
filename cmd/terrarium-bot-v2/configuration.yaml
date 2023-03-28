@@ -101,15 +101,21 @@ switch:
   - id: big_led
     on: http://meross-lan-api:8080/turnOn/big-led
     off: http://meross-lan-api:8080/turnOff/big-led
+    status: http://meross-lan-api:8080/status/big-led
+    jsonPath: Status
   - id: uvb
     on: http://sonoff-lan-api:8080/turnOn/uvb
     off: http://sonoff-lan-api:8080/turnOff/uvb
   - id: heater
     on: http://meross-lan-api:8080/turnOn/heat
     off: http://meross-lan-api:8080/turnOff/heat
+    status: http://meross-lan-api:8080/status/heat
+    jsonPath: Status
   - id: mister
     on: http://meross-lan-api:8080/turnOn/mister
     off: http://meross-lan-api:8080/turnOff/mister
+    status: http://meross-lan-api:8080/status/mister
+    jsonPath: Status
   - id: fan
     on: http://terrarium-fan-control:8080/turnOn
     off: http://terrarium-fan-control:8080/turnOff

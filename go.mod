@@ -1,4 +1,4 @@
-module github.com/alec-pinson/terrarium-bot-v2
+module github.com/alec-pinson/terrarium-bot
 
 go 1.20
 

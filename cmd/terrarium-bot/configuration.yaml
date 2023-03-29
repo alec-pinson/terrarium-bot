@@ -107,9 +107,9 @@ switch:
     on: http://sonoff-lan-api:8080/turnOn/uvb
     off: http://sonoff-lan-api:8080/turnOff/uvb
   - id: heater
-    on: http://meross-lan-api:8080/turnOn/heat
-    off: http://meross-lan-api:8080/turnOff/heat
-    status: http://meross-lan-api:8080/status/heat
+    on: http://meross-lan-api:8080/turnOn/heat-lamp
+    off: http://meross-lan-api:8080/turnOff/heat-lamp
+    status: http://meross-lan-api:8080/status/heat-lamp
     jsonPath: Status
   - id: mister
     on: http://meross-lan-api:8080/turnOn/mister
@@ -133,19 +133,13 @@ switch:
     insecure: true # ignore ssl certificate
 
 sensor:
-  # - id: temperature
-  #   url: http://terrarium-temp-sensor:8080
-  #   jsonPath: Temperature
-  # - id: humidity
-  #   url: http://terrarium-temp-sensor:8080
-  #   jsonPath: Humidity
   - id: temperature
-    url: http://terrarium-pi:8090/api/areas/fa69addf-01a0-45c0-b0c3-e1629d5a01c1/
-    jsonPath: state.sensors.current
+    url: http://terrarium-temp-sensor:8080
+    jsonPath: Temperature
     unit: °C
   - id: humidity
-    url: http://terrarium-pi:8090/api/areas/70a97617-5456-4f39-bbf1-c08414f5c5dd/
-    jsonPath: state.sensors.current
+    url: http://terrarium-temp-sensor:8080
+    jsonPath: Humidity
     unit: "%"
 
 notification:

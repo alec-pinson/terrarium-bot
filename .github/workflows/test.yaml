@@ -19,10 +19,10 @@ jobs:
           go-version: 1.20.1
       -
         name: Vet
-        run: cd cmd/terrarium-bot-v2 && go vet
+        run: cd cmd/terrarium-bot && go vet
       -
         name: Build
-        run: cd cmd/terrarium-bot-v2 && go build -v
+        run: cd cmd/terrarium-bot && go build -v
       -
         name: Test
-        run: cd cmd/terrarium-bot-v2 && go test -v
+        run: cd cmd/terrarium-bot && go test -v

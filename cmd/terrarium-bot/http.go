@@ -7,17 +7,28 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"time"
 )
 
-func SendRequest(url string, insecure bool) (map[string]interface{}, int, error) {
+func SendRequest(url string, insecure bool, retries int) (map[string]interface{}, int, error) {
 	result := map[string]interface{}{}
+	var resp *http.Response
+	var err error
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
 	}
 	client := &http.Client{Transport: tr}
 
-	resp, err := client.Get(url)
+	// retry x times if an error occurs, sleep 1 second each time
+	for i := 0; i < retries; i++ {
+		Debug("Request attempt %v/%v", i+1, retries)
+		resp, err = client.Get(url)
+		if err == nil && resp.StatusCode == 200 {
+			continue
+		}
+		time.Sleep(1 * time.Second)
+	}
 	if err != nil {
 		log.Println(err)
 		return nil, 0, err

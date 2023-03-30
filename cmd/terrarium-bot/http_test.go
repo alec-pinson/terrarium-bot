@@ -1,10 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -28,7 +32,7 @@ func TestSendRequest(t *testing.T) {
 		defer server.Close()
 
 		// Send request to mocked server URL
-		res, respCode, err := SendRequest(server.URL, false)
+		res, respCode, err := SendRequest(server.URL, false, 1)
 		if err != nil {
 			t.Fatalf("Unexpected error: %v", err)
 		}
@@ -43,12 +47,33 @@ func TestSendRequest(t *testing.T) {
 	})
 
 	t.Run("Invalid URL", func(t *testing.T) {
-		_, respCode, err := SendRequest("invalid_url", false)
+		_, respCode, err := SendRequest("invalid_url", false, 1)
 		if err == nil {
 			t.Error("Expected error, but got nil")
 		}
 		if respCode != 0 {
 			t.Fatalf("Expected response code 0, got %v", respCode)
 		}
+	})
+
+	t.Run("Invalid URL with 3 retries", func(t *testing.T) {
+		config.Debug = true
+		var buf bytes.Buffer
+		log.SetOutput(&buf)
+
+		_, respCode, err := SendRequest("invalid_url", false, 3)
+		if err == nil {
+			t.Error("Expected error, but got nil")
+		}
+		if respCode != 0 {
+			t.Fatalf("Expected response code 0, got %v", respCode)
+		}
+
+		if got := buf.String(); !strings.Contains(got, "3/3") {
+			t.Errorf("Expected 3 retries: %q", got)
+		}
+
+		config.Debug = false
+		log.SetOutput(os.Stderr)
 	})
 }

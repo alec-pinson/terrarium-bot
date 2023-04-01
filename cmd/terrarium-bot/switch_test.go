@@ -18,7 +18,7 @@ func TestGetSwitch(t *testing.T) {
 		{Id: "fan"},
 	}
 	expected := config.Switch[0]
-	result := GetSwitch("heating")
+	result := GetSwitch("heating", true)
 
 	if result != expected {
 		t.Errorf("Expected '%+v' but got '%+v'", expected, result)

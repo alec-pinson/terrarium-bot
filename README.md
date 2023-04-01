@@ -223,5 +223,26 @@ alert:
 2023/03/29 08:00:15 Switch On: 'uvb' (Setting Day Time configuration)
 ```
 
+## Switch Metrics
+Switch metrics can be accessed via the following endpoints:-
+- `/switch`
+- `/switch/<switch-name>`
+
+Example response:-
+```json
+{
+  "Id": "big_led",
+  "On": "http://meross-lan-api:8080/turnOn/big-led",
+  "Off": "http://meross-lan-api:8080/turnOff/big-led",
+  "StatusUrl": "http://meross-lan-api:8080/status/big-led",
+  "JsonPath": "Status",
+  "Insecure": false,
+  "State": "on",
+  "Disabled": 0,
+  "DisabledAt": "0001-01-01T00:00:00Z",
+  "LastAction": "2023-04-01T09:10:26.746657+01:00"
+}
+```
+
 ## The End
 Hopefully the configuration should be pretty self explanitory, if you get stuck or there are any features you think might be missing then feel free to create an issue :slightly_smiling_face:.

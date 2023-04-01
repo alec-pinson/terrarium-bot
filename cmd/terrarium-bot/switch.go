@@ -28,6 +28,8 @@ func InitSwitches() {
 	for _, s := range config.Switch {
 		// some urls include env vars
 		s.fixURLs()
+		// update status if possible on startup
+		s.getStatus()
 	}
 }
 

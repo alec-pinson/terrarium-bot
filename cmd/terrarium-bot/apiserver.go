@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -21,6 +22,10 @@ func (apiServer APIServer) Endpoint(w http.ResponseWriter, r *http.Request) {
 	switch path := r.URL.Path[1:]; {
 	case path == "health/live" || path == "health/ready":
 		fmt.Fprintf(w, "ok")
+	case path == "switch":
+		writeResponse(w, config.Switch, false)
+	case strings.HasPrefix(path, "switch/"):
+		GetSwitch(strings.Split(path, "/")[1], false).WriteStatus(w)
 	default:
 		if path == "favicon.ico" {
 			// ignore

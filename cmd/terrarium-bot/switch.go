@@ -4,18 +4,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 )
 
-func GetSwitch(id string) *Switch {
+func GetSwitch(id string, exitOnError bool) *Switch {
 	for _, s := range config.Switch {
 		if s.Id == id {
 			return s
 		}
 	}
-	log.Fatalf("Switch '%s' not found in configuration.yaml", id)
+	if exitOnError {
+		log.Fatalf("Switch '%s' not found in configuration.yaml", id)
+	} else {
+		log.Printf("Switch '%s' not found in configuration.yaml", id)
+	}
 	return nil
 }
 
@@ -156,4 +161,8 @@ func (s *Switch) TurnOff(reason string) {
 	}
 	s.setStatus("off")
 	log.Printf("Switch Off: '%s' (%s)", s.Id, reason)
+}
+
+func (s *Switch) WriteStatus(w http.ResponseWriter) {
+	writeResponse(w, s, false)
 }

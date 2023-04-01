@@ -90,7 +90,7 @@ func runTriggerAction(args []string, reason string) bool {
 }
 
 func runSwitchAction(args []string, reason string) bool {
-	s := GetSwitch(args[1])
+	s := GetSwitch(args[1], true)
 	switch strings.ToLower(args[2]) {
 	case "on":
 		if len(args) == 4 {

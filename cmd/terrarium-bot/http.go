@@ -25,7 +25,7 @@ func SendRequest(url string, insecure bool, retries int) (map[string]interface{}
 		Debug("Request attempt %v/%v", i+1, retries)
 		resp, err = client.Get(url)
 		if err == nil && resp.StatusCode == 200 {
-			continue
+			break
 		}
 		time.Sleep(1 * time.Second)
 	}
@@ -48,6 +48,9 @@ func SendRequest(url string, insecure bool, retries int) (map[string]interface{}
 
 	// attempt decode and return response
 	decoder := json.NewDecoder(resp.Body)
-	decoder.Decode(&result)
+	if err := decoder.Decode(&result); err != nil {
+		log.Printf("Request to %v: could not decode response: %v", url, err)
+		return nil, resp.StatusCode, err
+	}
 	return result, resp.StatusCode, nil
 }

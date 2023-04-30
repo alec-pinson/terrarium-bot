@@ -32,7 +32,7 @@ func TestSendRequest(t *testing.T) {
 		defer server.Close()
 
 		// Send request to mocked server URL
-		res, respCode, err := SendRequest(server.URL, false, 1)
+		res, respCode, err := SendRequest(server.URL, false, 1, true)
 		if err != nil {
 			t.Fatalf("Unexpected error: %v", err)
 		}
@@ -47,7 +47,7 @@ func TestSendRequest(t *testing.T) {
 	})
 
 	t.Run("Invalid URL", func(t *testing.T) {
-		_, respCode, err := SendRequest("invalid_url", false, 1)
+		_, respCode, err := SendRequest("invalid_url", false, 1, false)
 		if err == nil {
 			t.Error("Expected error, but got nil")
 		}
@@ -61,7 +61,7 @@ func TestSendRequest(t *testing.T) {
 		var buf bytes.Buffer
 		log.SetOutput(&buf)
 
-		_, respCode, err := SendRequest("invalid_url", false, 3)
+		_, respCode, err := SendRequest("invalid_url", false, 3, false)
 		if err == nil {
 			t.Error("Expected error, but got nil")
 		}

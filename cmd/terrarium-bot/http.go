@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func SendRequest(url string, insecure bool, retries int) (map[string]interface{}, int, error) {
+func SendRequest(url string, insecure bool, retries int, decodeJson bool) (map[string]interface{}, int, error) {
 	result := map[string]interface{}{}
 	var resp *http.Response
 	var err error
@@ -46,11 +46,13 @@ func SendRequest(url string, insecure bool, retries int) (map[string]interface{}
 		fmt.Printf("Response\n: %v\n\n", string(responseDump))
 	}
 
-	// attempt decode and return response
-	decoder := json.NewDecoder(resp.Body)
-	if err := decoder.Decode(&result); err != nil {
-		log.Printf("Request to %v: could not decode response: %v", url, err)
-		return nil, resp.StatusCode, err
+	if decodeJson {
+		// attempt decode and return response
+		decoder := json.NewDecoder(resp.Body)
+		if err := decoder.Decode(&result); err != nil {
+			log.Printf("Request to %v: could not decode response: %v", url, err)
+			return nil, resp.StatusCode, err
+		}
 	}
 	return result, resp.StatusCode, nil
 }

@@ -4,6 +4,8 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -53,6 +55,9 @@ func SendRequest(url string, insecure bool, retries int, decodeJson bool) (map[s
 			log.Printf("Request to %v: could not decode response: %v", url, err)
 			return nil, resp.StatusCode, err
 		}
+	} else {
+		// need to read the resp body in order for the connection to be reused https://golang.cafe/blog/how-to-reuse-http-connections-in-go.html
+		io.Copy(ioutil.Discard, resp.Body)
 	}
 	return result, resp.StatusCode, nil
 }

@@ -3,8 +3,6 @@
 [![Latest release](https://img.shields.io/github/v/release/alec-pinson/terrarium-bot?label=Latest%20release)](https://github.com/alec-pinson/terrarium-bot/releases/latest)
 [![GitHub Release Date](https://img.shields.io/github/release-date/alec-pinson/terrarium-bot)](https://github.com/alec-pinson/terrarium-bot/releases/latest)  
 
-**CURRENTLY IN TESTING**  - I have been running this for a week or so now and I am still fixing minor issues.  
-  
 Manage a Terrarium. Temperature, humidity, heating, misting, lighting, all fully configurable and customisable via YAML.  
   
 I currently run this in a Kubernetes cluster (3 Raspberry Pis using [K3S](https://k3s.io/)). I run it along side my other apps:
@@ -242,6 +240,26 @@ Example response:-
   "DisabledAt": "0001-01-01T00:00:00Z",
   "LastAction": "2023-04-01T09:10:26.746657+01:00"
 }
+```
+
+## Prometheus Metrics
+Prometheus metrics can be accessed via `:8081/metrics` and currently includes standard go metrics and the following custom metrics:-
+```
+# HELP terrarium_bot_http_client_pools_total The total number of http client pools
+# TYPE terrarium_bot_http_client_pools_total counter
+terrarium_bot_http_client_pools_total 3
+# HELP terrarium_bot_http_requests_received_total The total number of http requests received by terrarium bot
+# TYPE terrarium_bot_http_requests_received_total counter
+terrarium_bot_http_requests_received_total 2
+# HELP terrarium_bot_http_requests_sent_total The total number of http requests sent from terrarium bot
+# TYPE terrarium_bot_http_requests_sent_total counter
+terrarium_bot_http_requests_sent_total 33
+# HELP terrarium_bot_sensor_humidity The current value of the humidity sensor
+# TYPE terrarium_bot_sensor_humidity gauge
+terrarium_bot_sensor_humidity 65
+# HELP terrarium_bot_sensor_temperature The current value of the temperature sensor
+# TYPE terrarium_bot_sensor_temperature gauge
+terrarium_bot_sensor_temperature 27
 ```
 
 ## The End

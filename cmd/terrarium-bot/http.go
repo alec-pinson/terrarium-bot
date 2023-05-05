@@ -14,9 +14,22 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
-var httpClientPool []*HttpClientPool
+var (
+	httpClientPool       []*HttpClientPool
+	metricHttpClientPool = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "terrarium_bot_http_client_pools_total",
+		Help: "The total number of http client pools",
+	})
+	metricHttpRequestsSent = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "terrarium_bot_http_requests_sent_total",
+		Help: "The total number of http requests sent from terrarium bot",
+	})
+)
 
 type HttpClientPool struct {
 	Hostname string
@@ -45,6 +58,7 @@ func getClient(address string, insecure bool) *http.Client {
 		Hostname: hostname,
 		Client:   client,
 	})
+	metricHttpClientPool.Inc()
 	return &client
 }
 
@@ -71,6 +85,7 @@ func SendRequest(url string, insecure bool, retries int, decodeJson bool) (map[s
 	// retry x times if an error occurs, sleep 1 second each time
 	for i := 0; i < retries; i++ {
 		Debug("Request attempt %v/%v", i+1, retries)
+		metricHttpRequestsSent.Inc()
 		resp, err = client.Do(req)
 		if err == nil && resp.StatusCode == 200 {
 			break

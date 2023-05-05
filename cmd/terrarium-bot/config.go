@@ -62,7 +62,7 @@ type Sensor struct {
 	Insecure bool   `yaml:"insecure"`
 	JsonPath string `yaml:"jsonPath"`
 	Unit     string `yaml:"unit"`
-	Value    int
+	Value    float64
 }
 
 type Notification struct {
@@ -90,13 +90,13 @@ type Alert struct {
 
 type When struct {
 	Day struct {
-		Below int           `yaml:"below"`
-		Above int           `yaml:"above"`
+		Below float64       `yaml:"below"`
+		Above float64       `yaml:"above"`
 		Every time.Duration `yaml:"every"`
 	} `yaml:"day"`
 	Night struct {
-		Below int           `yaml:"below"`
-		Above int           `yaml:"above"`
+		Below float64       `yaml:"below"`
+		Above float64       `yaml:"above"`
 		Every time.Duration `yaml:"every"`
 	} `yaml:"night"`
 }

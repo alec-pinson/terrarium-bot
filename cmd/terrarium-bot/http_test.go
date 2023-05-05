@@ -77,3 +77,63 @@ func TestSendRequest(t *testing.T) {
 		log.SetOutput(os.Stderr)
 	})
 }
+
+func TestSendRequestConnectionPooling(t *testing.T) {
+	isTesting = true
+	config.Debug = true
+	httpClientPool = nil
+	var buf bytes.Buffer
+	log.SetOutput(&buf)
+
+	// Mock http request response
+	mockResponse := `{"key1": "value1", "key2": 2, "key3": ["element1", "element2"]}`
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, mockResponse)
+	})
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	// first request should create a new http pool
+	SendRequest(server.URL, false, 1, true)
+	if got := buf.String(); !strings.Contains(got, "Creating http pool") {
+		t.Errorf("Expected new connection to be created: %q", got)
+	}
+
+	buf.Reset()
+	SendRequest(server.URL, false, 1, true)
+	if got := buf.String(); !strings.Contains(got, "conn was reused: true") {
+		t.Errorf("Expected connection to be reused: %q", got)
+	}
+
+	buf.Reset()
+	SendRequest(server.URL, false, 1, true)
+	if got := buf.String(); !strings.Contains(got, "conn was reused: true") {
+		t.Errorf("Expected connection to be reused: %q", got)
+	}
+
+	buf.Reset()
+	SendRequest(server.URL+"/123", false, 1, true)
+	if got := buf.String(); !strings.Contains(got, "conn was reused: true") {
+		t.Errorf("Expected connection to be reused: %q", got)
+	}
+
+	buf.Reset()
+	SendRequest(server.URL+"/abcdef", false, 1, true)
+	if got := buf.String(); !strings.Contains(got, "conn was reused: true") {
+		t.Errorf("Expected connection to be reused: %q", got)
+	}
+
+	buf.Reset()
+	SendRequest(server.URL, false, 1, true)
+	if got := buf.String(); !strings.Contains(got, "conn was reused: true") {
+		t.Errorf("Expected connection to be reused: %q", got)
+	}
+
+	// reset
+	isTesting = false
+	config.Debug = false
+	log.SetOutput(os.Stderr)
+}

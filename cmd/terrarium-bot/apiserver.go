@@ -6,9 +6,17 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 type APIServer struct{}
+
+var metricHttpRequestsReceived = promauto.NewCounter(prometheus.CounterOpts{
+	Name: "terrarium_bot_http_requests_received_total",
+	Help: "The total number of http requests received by terrarium bot",
+})
 
 func (apiServer APIServer) Start() {
 	log.Println("Starting API server...")
@@ -19,6 +27,7 @@ func (apiServer APIServer) Start() {
 }
 
 func (apiServer APIServer) Endpoint(w http.ResponseWriter, r *http.Request) {
+	metricHttpRequestsReceived.Inc()
 	switch path := r.URL.Path[1:]; {
 	case path == "health/live" || path == "health/ready":
 		fmt.Fprintf(w, "ok")

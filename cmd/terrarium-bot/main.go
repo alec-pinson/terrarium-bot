@@ -7,6 +7,7 @@ import (
 var (
 	config    Config
 	apiServer APIServer
+	metrics   Metrics
 	isTesting bool = false // flag used when testing
 )
 
@@ -33,6 +34,7 @@ func main() {
 	InitTime()
 	InitAlerting()
 	apiServer.Start()
+	metrics.Start()
 	InitTriggers()
 	InitNotifications()
 

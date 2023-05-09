@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -23,8 +23,8 @@ func InitTriggers() {
 	}
 }
 
-func GenerateReason(value int, unit string, maxValue int) string {
-	return strconv.Itoa(value) + unit + "/" + strconv.Itoa(maxValue) + unit
+func GenerateReason(value float64, unit string, maxValue float64) string {
+	return fmt.Sprintf("%.2f", value) + unit + "/" + fmt.Sprintf("%.2f", maxValue) + unit
 }
 
 func (t *Trigger) monitor() {
@@ -32,7 +32,7 @@ func (t *Trigger) monitor() {
 		s         *Sensor
 		runAction bool
 		reason    string
-		value     int
+		value     float64
 	)
 
 	// get trigger sensor if one is set

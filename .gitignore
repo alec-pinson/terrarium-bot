@@ -20,3 +20,4 @@
 # Go workspace file
 go.work
 cmd/terrarium-bot/test.yaml
+cmd/terrarium-bot/terrarium-bot

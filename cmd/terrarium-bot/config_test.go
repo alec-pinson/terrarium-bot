@@ -129,8 +129,8 @@ alert:
 	assert.Equal(t, "trigger1", loadedConfig.Trigger[0].Id)
 	assert.Equal(t, "sensor1", loadedConfig.Trigger[0].Sensor)
 	assert.Equal(t, "http://localhost:8080", loadedConfig.Trigger[0].Endpoint)
-	assert.Equal(t, 5, loadedConfig.Trigger[0].When.Day.Below)
-	assert.Equal(t, 5, loadedConfig.Trigger[0].When.Night.Below)
+	assert.Equal(t, float64(5), loadedConfig.Trigger[0].When.Day.Below)
+	assert.Equal(t, float64(5), loadedConfig.Trigger[0].When.Night.Below)
 	assert.Equal(t, []string{"doSomething"}, loadedConfig.Trigger[0].Action)
 	assert.Equal(t, []string{"doSomethingElse"}, loadedConfig.Trigger[0].Else)
 
@@ -162,8 +162,8 @@ alert:
 	assert.Len(t, loadedConfig.Alert, 1)
 	assert.Equal(t, "alert1", loadedConfig.Alert[0].Id)
 	assert.Equal(t, "sensor1", loadedConfig.Alert[0].Sensor)
-	assert.Equal(t, 10, loadedConfig.Alert[0].When.Day.Below)
-	assert.Equal(t, 5, loadedConfig.Alert[0].When.Night.Below)
+	assert.Equal(t, float64(10), loadedConfig.Alert[0].When.Day.Below)
+	assert.Equal(t, float64(5), loadedConfig.Alert[0].When.Night.Below)
 	assert.Equal(t, 20*time.Minute, loadedConfig.Alert[0].After)
 	assert.Equal(t, []string{"notification1"}, loadedConfig.Alert[0].Notification)
 

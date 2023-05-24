@@ -64,7 +64,65 @@ func TestMonitorTrigger(t *testing.T) {
 		t.Errorf("Trigger should have turned on the mock-switch but didn't")
 	}
 
+	// reuse same trigger to test DroppedBy
+	trigger.When.Day.Above = 0
+	// set when dropped by to 5
+	trigger.When.Day.DroppedBy = 5
+
+	// set the sensor to 60
+	s.SetValue(60)
+	// call trigger monitor to make sure it turns off the switch
+	trigger.monitor()
+	if ss.getStatus() != "off" {
+		t.Errorf("DropBy trigger should have turned off the mock-switch but didn't")
+	}
+
+	// set the sensor to 56
+	s.SetValue(56)
+	// call trigger monitor to make sure it turns off the switch
+	trigger.monitor()
+	if ss.getStatus() != "off" {
+		t.Errorf("DropBy trigger should have turned off the mock switch but didn't. Current sensor val: %v, previous sensor val: %v", s.Value, s.PreviousValue)
+	}
+
+	// drop sensor value by 5
+	s.SetValue(51)
+	// call trigger monitor to make sure it turns off the switch
+	trigger.monitor()
+	if ss.getStatus() != "on" {
+		t.Errorf("DropBy trigger should have turned on the mock switch but didn't. Current sensor val: %v, previous sensor val: %v", s.Value, s.PreviousValue)
+	}
+
+	// reset the switch
+	s.SetValue(51)
+	trigger.monitor()
+	if ss.getStatus() != "off" {
+		t.Errorf("Trigger should have turned off the mock switch but didn't. Current sensor val: %v, previous sensor val: %v", s.Value, s.PreviousValue)
+	}
+
+	// set when dropped by to 0
+	trigger.When.Day.DroppedBy = 0
+	// now to test increased by
+	trigger.When.Day.IncreasedBy = 5
+
+	// set the sensor to 53
+	s.SetValue(53)
+	// call trigger monitor to make sure it turns off the switch
+	trigger.monitor()
+	if ss.getStatus() != "off" {
+		t.Errorf("IncreaseBy trigger should have turned off the mock-switch but didn't")
+	}
+
+	// increase sensor value by 5+
+	s.SetValue(60)
+	// call trigger monitor to make sure it turns off the switch
+	trigger.monitor()
+	if ss.getStatus() != "on" {
+		t.Errorf("IncreaseBy trigger should have turned on the mock switch but didn't. Current sensor val: %v, previous sensor val: %v", s.Value, s.PreviousValue)
+	}
+
 	// reset
+	config.Debug = false
 	config.DryRun = false
 	isTesting = false
 }

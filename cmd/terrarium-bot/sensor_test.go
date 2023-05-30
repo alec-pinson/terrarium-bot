@@ -32,3 +32,13 @@ func TestSensorGetValue(t *testing.T) {
 		t.Errorf("Expected sensor value to be 42, but got %v", v)
 	}
 }
+
+func TestSensorGetPreviousValue(t *testing.T) {
+	s := &Sensor{}
+	s.SetValue(42)
+	s.SetValue(12)
+	v := s.GetPreviousValue()
+	if v != 42 {
+		t.Errorf("Expected sensor value to be 42, but got %v", v)
+	}
+}

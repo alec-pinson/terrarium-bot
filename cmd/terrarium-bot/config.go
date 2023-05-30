@@ -57,12 +57,13 @@ type Switch struct {
 }
 
 type Sensor struct {
-	Id       string `yaml:"id"`
-	Url      string `yaml:"url"`
-	Insecure bool   `yaml:"insecure"`
-	JsonPath string `yaml:"jsonPath"`
-	Unit     string `yaml:"unit"`
-	Value    float64
+	Id            string `yaml:"id"`
+	Url           string `yaml:"url"`
+	Insecure      bool   `yaml:"insecure"`
+	JsonPath      string `yaml:"jsonPath"`
+	Unit          string `yaml:"unit"`
+	Value         float64
+	PreviousValue float64
 }
 
 type Notification struct {
@@ -90,14 +91,18 @@ type Alert struct {
 
 type When struct {
 	Day struct {
-		Below float64       `yaml:"below"`
-		Above float64       `yaml:"above"`
-		Every time.Duration `yaml:"every"`
+		Below       float64       `yaml:"below"`
+		Above       float64       `yaml:"above"`
+		DroppedBy   float64       `yaml:"droppedBy"`
+		IncreasedBy float64       `yaml:"increasedBy"`
+		Every       time.Duration `yaml:"every"`
 	} `yaml:"day"`
 	Night struct {
-		Below float64       `yaml:"below"`
-		Above float64       `yaml:"above"`
-		Every time.Duration `yaml:"every"`
+		Below       float64       `yaml:"below"`
+		Above       float64       `yaml:"above"`
+		DroppedBy   float64       `yaml:"droppedBy"`
+		IncreasedBy float64       `yaml:"increasedBy"`
+		Every       time.Duration `yaml:"every"`
 	} `yaml:"night"`
 }
 

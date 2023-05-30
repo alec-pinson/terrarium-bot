@@ -61,6 +61,13 @@ trigger:
     endpoint: /prevent-mist
     action:
       - trigger.mist.disable.40m # disable the below trigger for 40m
+  - id: doorOpened
+    sensor: humidity
+    when:
+      day:
+        droppedBy: 5 # usually when terrarium doors are opened
+    action:
+      - trigger.mist.disable.30m # disable the below trigger for 30m
   - id: mist
     sensor: humidity
     when:

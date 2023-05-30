@@ -29,10 +29,11 @@ func GenerateReason(value float64, unit string, maxValue float64) string {
 
 func (t *Trigger) monitor() {
 	var (
-		s         *Sensor
-		runAction bool
-		reason    string
-		value     float64
+		s             *Sensor
+		runAction     bool
+		reason        string
+		value         float64
+		previousValue float64
 	)
 
 	// get trigger sensor if one is set
@@ -46,6 +47,7 @@ func (t *Trigger) monitor() {
 	for {
 		runAction = false
 		reason = ""
+		previousValue = 0
 		value = 0
 
 		if t.isDisabled() {
@@ -59,9 +61,9 @@ func (t *Trigger) monitor() {
 
 		if s != nil {
 			// get value from the sensor
+			previousValue = s.GetPreviousValue()
 			value = s.GetValue()
 		}
-
 		valueSet := value != 0
 		dayAbove := t.When.Day.Above != 0
 		dayBelow := t.When.Day.Below != 0
@@ -70,9 +72,18 @@ func (t *Trigger) monitor() {
 		dayEvery := t.When.Day.Every != 0
 		nightEvery := t.When.Night.Every != 0
 
+		// has the value dropped/increased by x or more
+		dayDroppedBy := t.When.Day.DroppedBy != 0 && value <= previousValue-t.When.Day.DroppedBy
+		nightDroppedBy := t.When.Night.DroppedBy != 0 && value <= previousValue-t.When.Night.DroppedBy
+		dayIncreasedBy := t.When.Day.IncreasedBy != 0 && value >= previousValue+t.When.Day.IncreasedBy
+		nightIncreasedBy := t.When.Night.IncreasedBy != 0 && value >= previousValue+t.When.Night.IncreasedBy
+
 		// check triggers based on time of day and value
 		if isDayTime() {
-			if valueSet && dayAbove && value > t.When.Day.Above {
+			if valueSet && (dayDroppedBy || dayIncreasedBy) {
+				runAction = true
+				reason = fmt.Sprintf("%.2f", previousValue) + s.Unit + "->" + fmt.Sprintf("%.2f", value) + s.Unit
+			} else if valueSet && dayAbove && value > t.When.Day.Above {
 				runAction = true
 				reason = GenerateReason(value, s.Unit, t.When.Day.Above)
 			} else if valueSet && dayBelow && value < t.When.Day.Below {
@@ -83,7 +94,10 @@ func (t *Trigger) monitor() {
 				runAction = true
 			}
 		} else {
-			if valueSet && nightAbove && value > t.When.Night.Above {
+			if valueSet && (nightDroppedBy || nightIncreasedBy) {
+				runAction = true
+				reason = fmt.Sprintf("%.2f", previousValue) + s.Unit + "->" + fmt.Sprintf("%.2f", value) + s.Unit
+			} else if valueSet && nightAbove && value > t.When.Night.Above {
 				runAction = true
 				reason = GenerateReason(value, s.Unit, t.When.Night.Above)
 			} else if valueSet && nightBelow && value < t.When.Night.Below {

@@ -31,11 +31,20 @@ func InitSensors() {
 }
 
 func (s *Sensor) SetValue(value float64) {
+	if s.Value == 0 {
+		s.PreviousValue = value
+	} else {
+		s.PreviousValue = s.Value
+	}
 	s.Value = value
 }
 
 func (s *Sensor) GetValue() float64 {
 	return s.Value
+}
+
+func (s *Sensor) GetPreviousValue() float64 {
+	return s.PreviousValue
 }
 
 func (s *Sensor) getSensorValue() float64 {

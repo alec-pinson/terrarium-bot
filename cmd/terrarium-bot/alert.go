@@ -29,28 +29,30 @@ func (a *Alert) monitor() {
 	// maybe add a sleep here for startup, dont want alerts straight away
 	s := GetSensor(a.Sensor)
 	for {
-		value := s.GetValue()
-		if !isSunset() && !isSunrise() && value != 0 {
-			// don't alert between sunset/sunrise or if value is 0
-			if isDayTime() {
-				// day time
-				if value > a.When.Day.Above {
-					a.Failing("%v%s/%v%s", value, s.Unit, a.When.Day.Above, s.Unit)
-				} else if value < a.When.Day.Below {
-					a.Failing("%v%s/%v%s", value, s.Unit, a.When.Day.Below, s.Unit)
+		if !a.isDisabled() {
+			value := s.GetValue()
+			if !isSunset() && !isSunrise() && value != 0 {
+				// don't alert between sunset/sunrise or if value is 0
+				if isDayTime() {
+					// day time
+					if value > a.When.Day.Above {
+						a.Failing("%v%s/%v%s", value, s.Unit, a.When.Day.Above, s.Unit)
+					} else if value < a.When.Day.Below {
+						a.Failing("%v%s/%v%s", value, s.Unit, a.When.Day.Below, s.Unit)
+					} else {
+						// clear alerts
+						a.Clear()
+					}
 				} else {
-					// clear alerts
-					a.Clear()
-				}
-			} else {
-				// night time
-				if value > a.When.Night.Above {
-					a.Failing("%v%s/%v%s", value, s.Unit, a.When.Night.Above, s.Unit)
-				} else if value < a.When.Night.Below {
-					a.Failing("%v%s/%v%s", value, s.Unit, a.When.Night.Below, s.Unit)
-				} else {
-					// clear alerts
-					a.Clear()
+					// night time
+					if value > a.When.Night.Above {
+						a.Failing("%v%s/%v%s", value, s.Unit, a.When.Night.Above, s.Unit)
+					} else if value < a.When.Night.Below {
+						a.Failing("%v%s/%v%s", value, s.Unit, a.When.Night.Below, s.Unit)
+					} else {
+						// clear alerts
+						a.Clear()
+					}
 				}
 			}
 		}

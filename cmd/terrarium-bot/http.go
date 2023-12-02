@@ -62,7 +62,7 @@ func getClient(address string, insecure bool) *http.Client {
 	return &client
 }
 
-func SendRequest(url string, insecure bool, retries int, decodeJson bool) (map[string]interface{}, int, error) {
+func SendRequest(url string, insecure bool, retries int, decodeJson bool, apiToken string) (map[string]interface{}, int, error) {
 	result := map[string]interface{}{}
 	var req *http.Request
 	var resp *http.Response
@@ -77,6 +77,15 @@ func SendRequest(url string, insecure bool, retries int, decodeJson bool) (map[s
 		req, err = http.NewRequestWithContext(traceCtx, http.MethodGet, url, nil)
 	} else {
 		req, err = http.NewRequest(http.MethodGet, url, nil)
+	}
+
+	if apiToken != "" {
+		req.Header.Set("Content-Type", "application/json")
+		if strings.HasPrefix(apiToken, "Bearer") {
+			req.Header.Set("Authorization", apiToken)
+		} else {
+			req.Header.Set("Authorization", "Bearer "+apiToken)
+		}
 	}
 
 	// set http insecure mode true/false

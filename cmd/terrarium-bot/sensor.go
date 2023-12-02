@@ -48,7 +48,7 @@ func (s *Sensor) GetPreviousValue() float64 {
 }
 
 func (s *Sensor) getSensorValue() float64 {
-	r, respCode, err := SendRequest(s.Url, s.Insecure, 3, s.JsonPath != "")
+	r, respCode, err := SendRequest(s.Url, s.Insecure, 3, s.JsonPath != "", s.APIToken)
 	if err != nil {
 		log.Println(err)
 		return 0

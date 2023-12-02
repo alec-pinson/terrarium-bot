@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -48,6 +47,7 @@ type Switch struct {
 	On         string `yaml:"on"`
 	Off        string `yaml:"off"`
 	StatusUrl  string `yaml:"status"`
+	APIToken   string `yaml:"apiToken"`
 	JsonPath   string `yaml:"jsonPath"`
 	Insecure   bool   `yaml:"insecure"`
 	State      string // on/off
@@ -59,6 +59,7 @@ type Switch struct {
 type Sensor struct {
 	Id            string `yaml:"id"`
 	Url           string `yaml:"url"`
+	APIToken      string `yaml:"apiToken"`
 	Insecure      bool   `yaml:"insecure"`
 	JsonPath      string `yaml:"jsonPath"`
 	Unit          string `yaml:"unit"`
@@ -130,7 +131,7 @@ func (config Config) Load() Config {
 	log.Printf("Loading configuration from '%s'...", config.File)
 
 	// load yaml from file
-	yamlFile, err := ioutil.ReadFile(config.File)
+	yamlFile, err := os.ReadFile(config.File)
 	if err != nil {
 		log.Fatal(err)
 	}

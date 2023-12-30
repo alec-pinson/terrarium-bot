@@ -43,23 +43,25 @@ type Trigger struct {
 }
 
 type Switch struct {
-	Id         string `yaml:"id"`
-	On         string `yaml:"on"`
-	Off        string `yaml:"off"`
-	StatusUrl  string `yaml:"status"`
-	APIToken   string `yaml:"apiToken"`
-	JsonPath   string `yaml:"jsonPath"`
-	Insecure   bool   `yaml:"insecure"`
-	State      string // on/off
-	Disabled   time.Duration
-	DisabledAt time.Time
-	LastAction time.Time
+	Id            string `yaml:"id"`
+	On            string `yaml:"on"`
+	Off           string `yaml:"off"`
+	StatusUrl     string `yaml:"status"`
+	APIToken      string `yaml:"apiToken"`
+	APITokenValue string
+	JsonPath      string `yaml:"jsonPath"`
+	Insecure      bool   `yaml:"insecure"`
+	State         string // on/off
+	Disabled      time.Duration
+	DisabledAt    time.Time
+	LastAction    time.Time
 }
 
 type Sensor struct {
 	Id            string `yaml:"id"`
 	Url           string `yaml:"url"`
 	APIToken      string `yaml:"apiToken"`
+	APITokenValue string
 	Insecure      bool   `yaml:"insecure"`
 	JsonPath      string `yaml:"jsonPath"`
 	Unit          string `yaml:"unit"`
@@ -140,10 +142,20 @@ func (config Config) Load() Config {
 		log.Fatal(err)
 	}
 
-	// get secrets from env vars
+	// get secrets from env vars - notifications
 	for idx, n := range config.Notification {
 		config.Notification[idx].UserTokenValue = os.Getenv(n.UserToken)
 		config.Notification[idx].APITokenValue = os.Getenv(n.APIToken)
+	}
+
+	// get secrets from env vars - sensor
+	for idx, s := range config.Sensor {
+		config.Sensor[idx].APITokenValue = os.Getenv(s.APIToken)
+	}
+
+	// get secrets from env vars - switch
+	for idx, s := range config.Switch {
+		config.Switch[idx].APITokenValue = os.Getenv(s.APIToken)
 	}
 
 	// convert times

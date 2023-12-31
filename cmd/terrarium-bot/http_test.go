@@ -32,7 +32,7 @@ func TestSendRequest(t *testing.T) {
 		}
 
 		// Send request to mocked server URL
-		res, respCode, err := SendRequest(server.URL, false, 1, true)
+		res, respCode, err := SendRequest(server.URL, false, 1, true, "")
 		if err != nil {
 			t.Fatalf("Unexpected error: %v", err)
 		}
@@ -47,7 +47,7 @@ func TestSendRequest(t *testing.T) {
 	})
 
 	t.Run("Invalid URL", func(t *testing.T) {
-		_, respCode, err := SendRequest("invalid_url", false, 1, false)
+		_, respCode, err := SendRequest("invalid_url", false, 1, false, "")
 		if err == nil {
 			t.Error("Expected error, but got nil")
 		}
@@ -61,7 +61,7 @@ func TestSendRequest(t *testing.T) {
 		var buf bytes.Buffer
 		log.SetOutput(&buf)
 
-		_, respCode, err := SendRequest("invalid_url", false, 3, false)
+		_, respCode, err := SendRequest("invalid_url", false, 3, false, "")
 		if err == nil {
 			t.Error("Expected error, but got nil")
 		}
@@ -97,37 +97,37 @@ func TestSendRequestConnectionPooling(t *testing.T) {
 	defer server.Close()
 
 	// first request should create a new http pool
-	SendRequest(server.URL, false, 1, true)
+	SendRequest(server.URL, false, 1, true, "")
 	if got := buf.String(); !strings.Contains(got, "Creating http pool") {
 		t.Errorf("Expected new connection to be created: %q", got)
 	}
 
 	buf.Reset()
-	SendRequest(server.URL, false, 1, true)
+	SendRequest(server.URL, false, 1, true, "")
 	if got := buf.String(); !strings.Contains(got, "conn was reused: true") {
 		t.Errorf("Expected connection to be reused: %q", got)
 	}
 
 	buf.Reset()
-	SendRequest(server.URL, false, 1, true)
+	SendRequest(server.URL, false, 1, true, "")
 	if got := buf.String(); !strings.Contains(got, "conn was reused: true") {
 		t.Errorf("Expected connection to be reused: %q", got)
 	}
 
 	buf.Reset()
-	SendRequest(server.URL+"/123", false, 1, true)
+	SendRequest(server.URL+"/123", false, 1, true, "")
 	if got := buf.String(); !strings.Contains(got, "conn was reused: true") {
 		t.Errorf("Expected connection to be reused: %q", got)
 	}
 
 	buf.Reset()
-	SendRequest(server.URL+"/abcdef", false, 1, true)
+	SendRequest(server.URL+"/abcdef", false, 1, true, "")
 	if got := buf.String(); !strings.Contains(got, "conn was reused: true") {
 		t.Errorf("Expected connection to be reused: %q", got)
 	}
 
 	buf.Reset()
-	SendRequest(server.URL, false, 1, true)
+	SendRequest(server.URL, false, 1, true, "")
 	if got := buf.String(); !strings.Contains(got, "conn was reused: true") {
 		t.Errorf("Expected connection to be reused: %q", got)
 	}

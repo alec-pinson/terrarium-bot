@@ -43,7 +43,7 @@ func (s *Switch) getStatus() string {
 		return s.State
 	}
 
-	r, respCode, err := SendRequest(s.StatusUrl, s.Insecure, 3, s.JsonPath != "")
+	r, respCode, err := SendRequest(s.StatusUrl, s.Insecure, 3, s.JsonPath != "", s.APITokenValue)
 	if err != nil || respCode != 200 {
 		log.Printf("Switch Offline: %s", s.Id)
 		for _, n := range config.Notification {
@@ -128,7 +128,7 @@ func (s *Switch) TurnOn(For string, Reason string) {
 
 	s.SetLastAction()
 	if !config.DryRun {
-		_, respCode, err := SendRequest(s.On, s.Insecure, 3, false)
+		_, respCode, err := SendRequest(s.On, s.Insecure, 3, false, s.APITokenValue)
 		if err != nil || respCode != 200 {
 			log.Printf("Switch Offline: %s", s.Id)
 			for _, n := range config.Notification {
@@ -153,7 +153,7 @@ func (s *Switch) TurnOff(reason string) {
 	}
 	s.SetLastAction()
 	if !config.DryRun {
-		_, respCode, err := SendRequest(s.Off, s.Insecure, 3, false)
+		_, respCode, err := SendRequest(s.Off, s.Insecure, 3, false, s.APITokenValue)
 		if err != nil || respCode != 200 {
 			log.Printf("Switch Offline: %s", s.Id)
 			for _, n := range config.Notification {

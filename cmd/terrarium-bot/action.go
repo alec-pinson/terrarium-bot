@@ -34,7 +34,7 @@ func RunAction(a string, reason string) bool {
 
 	switch args[0] {
 	case "sleep":
-		return runSleepAction(args, reason)
+		return runSleepAction(args)
 	case "trigger":
 		return runTriggerAction(args, reason)
 	case "switch":
@@ -42,20 +42,20 @@ func RunAction(a string, reason string) bool {
 	case "alert":
 		return runAlertAction(args, reason)
 	case "echo":
-		return runEchoAction(args, reason)
+		return runEchoAction(args)
 	default:
 		log.Printf("Unknown action '%s'", strings.Join(args, "."))
 		return false
 	}
 }
 
-func runEchoAction(args []string, reason string) bool {
+func runEchoAction(args []string) bool {
 	message := strings.Join(args, ".")
 	log.Println(message[5:]) // print without echo.
 	return true
 }
 
-func runSleepAction(args []string, reason string) bool {
+func runSleepAction(args []string) bool {
 	sleepDuration, err := time.ParseDuration(args[1])
 	if err != nil {
 		log.Printf("Invalid sleep duration '%s'", args[1])
